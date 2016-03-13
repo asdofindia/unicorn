@@ -24,6 +24,8 @@ audio, video, text or binary data.
 - [**Specifications**](https://muktakosh.org/c/unicorn/spec)
 - [**Bug reports/issues**](https://github.com/muktakosh/unicorn/issues)
 
+**Note:** Github issues are used only for development milestones and bug tracking. All other relevant discussions, like feature discussions, spec drafting, user support etc., happen on [Muktakosh's unicorn](https://muktakosh.org/c/unicorn) category.
+
 ## References
 
 - [**unicorn architecture overview**](https://muktakosh.org/t/topic/24)
