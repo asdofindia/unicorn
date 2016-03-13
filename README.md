@@ -26,6 +26,13 @@ audio, video, text or binary data.
 
 **Note:** Github issues are used only for development milestones and bug tracking. All other relevant discussions, like feature discussions, spec drafting, user support etc., happen on [Muktakosh's unicorn](https://muktakosh.org/c/unicorn) category.
 
+## Development milestones
+
+Check the [milestones](https://github.com/muktakosh/unicorn/milestones) page on Github issues for the development roadmap.
+
+- [Roadmap for v0.1.0](https://github.com/muktakosh/unicorn/milestones/v0.1.0)
+- [Roadmap for v1.0.0](https://github.com/muktakosh/unicorn/milestones/v1.0.0)
+
 ## References
 
 - [**unicorn architecture overview**](https://muktakosh.org/t/topic/24)
