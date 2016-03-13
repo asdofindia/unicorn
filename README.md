@@ -19,20 +19,14 @@ audio, video, text or binary data.
 
 ## Community
 
-- [**Issues**](https://github.com/muktakosh/unicorn/issues)
-- [**Forum**](https://muktakosh.org/c/unicorn)
-- [**Telegram**](https://telegram.me/joinchat/AvJ4FgY8q5XVDqwHaaPOpQ)
+- [**Discussions**](https://muktakosh.org/c/unicorn)
+- [**Feature requests**](https://muktakosh.org/c/unicorn/feature)
+- [**Specifications**](https://muktakosh.org/c/unicorn/spec)
+- [**Bug reports/issues**](https://github.com/muktakosh/unicorn/issues)
 
+## References
 
-## Roadmap
-
-### v1.0
-
-- Implement signaling of devices using the [Matrix specifications](http://matrix.org/docs/spec/r0.0.1/).
-- Implement server federation using the [Matrix Federation specifications](http://matrix.org/docs/spec/r0.0.1/server_server.html).
-- Core modules implementation in [Rust](https://www.rust-lang.org/).
-- API Server implementation in NodeJS (Open to discussions)
-- Client for connecting to unicorn servers, in JavaScript.
+- [**unicorn architecture overview**](https://muktakosh.org/t/topic/24)
 
 ## License
 
