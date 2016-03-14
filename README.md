@@ -45,7 +45,6 @@ Check the [milestones](https://github.com/muktakosh/unicorn/milestones) page on 
 
 ## License
 
-This project's source code is subject to the terms of the
-[Mozilla Public License, v. 2.0](https://mozilla.org/MPL/2.0).
+This is free and unencumbered software released into the public domain.
 
-Copyright (c) 2016 Muktakosh.org and [contributors](CREDITS).
+unicorn is a project made possible by [Muktakosh](https://muktakosh.org) and [contributors](CREDITS). [No rights reserved](LICENSE).
