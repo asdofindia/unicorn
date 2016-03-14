@@ -47,4 +47,6 @@ Check the [milestones](https://github.com/muktakosh/unicorn/milestones) page on 
 
 This is free and unencumbered software released into the public domain.
 
+unicorn uses several other software. The entire list of those, along with the licenses they are used under, can be found in [ATTRIBUTIONS](ATTRIBUTIONS).
+
 unicorn is a project made possible by [Muktakosh](https://muktakosh.org) and [contributors](CREDITS). [No rights reserved](LICENSE).

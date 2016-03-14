@@ -1,0 +1,4 @@
+This document states the software used to build, deploy and distribute unicorn.
+
+- "The Rust Programming Language" (rustc) by The Rust Project Developers under the Apache License v2.0
+- "Cargo: The Rust package manager" by The Rust Project Developers under the Apache License v2.0 
