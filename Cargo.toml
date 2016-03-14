@@ -1,0 +1,25 @@
+[package]
+name = "unicorn"
+version = "0.1.0"
+authors = ["The Muktakosh Project Developers"]
+readme = "README.md"
+repository = "https://github.com/muktakosh/unicorn"
+homepage = "https://muktakosh.org/c/unicorn"
+description = """
+unicorn's purpose is to dissolve fragmentation of the internet; by
+making it possible to bridge together different types of networks. It
+aims to be a data-agnostic communications technology platform that can
+connect any number and combination of clients (humans or machines).
+"""
+
+[dependencies]
+channelhandler = { path = "channelhandler" }
+core = { path = "core" }
+dataelement = { path = "dataelement" }
+datastore = { path = "datastore" }
+gateway = { path = "gateway" }
+message = { path = "message" }
+
+[[bin]]
+name = "unicorn"
+path = "unicorn/main.rs"
