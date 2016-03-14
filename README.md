@@ -1,5 +1,7 @@
 # unicorn
 
+[![Build Status](https://travis-ci.org/muktakosh/unicorn.svg?branch=master)](https://travis-ci.org/muktakosh/unicorn)
+
 "unicorn" is our sweet little name for **Unified Communications Over Real-time Networks**.
 
 unicorn's purpose is to dissolve fragmentation of the internet; by
