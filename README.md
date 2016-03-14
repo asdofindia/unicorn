@@ -17,6 +17,10 @@ It aims to be agnostic of data-type. If the data type can be streamed,
 unicorn will be able to support it. This means, it will work for
 audio, video, text or binary data.
 
+## Contribute
+
+For build instructions and setup information, check [CONTRIBUTORS.md](CONTRIBUTORS.md).
+
 ## Community
 
 - [**Discussions**](https://muktakosh.org/c/unicorn)
