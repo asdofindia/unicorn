@@ -29,6 +29,8 @@ For build instructions, setup information and general contribution requirements,
 - [**Feature requests**](https://muktakosh.org/c/unicorn/feature)
 - [**Specifications**](https://muktakosh.org/c/unicorn/spec)
 - [**Bug reports/issues**](https://github.com/muktakosh/unicorn/issues)
+- [**Telegram**](https://telegram.me/mk_unicorn)
+- **IRC:** `#muktakosh` on `irc.freenode.net`
 
 **Note:** Github issues are used only for development milestones and bug tracking. All other relevant discussions, like feature discussions, spec drafting, user support etc., happen on [Muktakosh's unicorn](https://muktakosh.org/c/unicorn) category.
 
