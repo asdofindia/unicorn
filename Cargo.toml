@@ -19,7 +19,3 @@ dataelement = { path = "dataelement" }
 datastore = { path = "datastore" }
 gateway = { path = "gateway" }
 message = { path = "message" }
-
-[[bin]]
-name = "unicorn"
-path = "unicorn/main.rs"

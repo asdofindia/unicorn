@@ -1,17 +1,17 @@
-use std::env;
+extern crate unicorn;
 
-const VERSION: &'static str = "0.1.0";
+use std::env;
 
 fn help() {
     println!("unicorn :: Unified Communications Over Real-time Networks");
-    println!("Version: v{}", VERSION);
+    println!("Version: v{}", unicorn::VERSION);
     println!("\nAvailable commands:");
     println!(" --version - Show program version");
     println!(" --help    - Show this help message");
 }
 
 fn print_version() {
-    println!("{}", VERSION);
+    println!("{}", unicorn::VERSION);
 }
 
 fn main() {
