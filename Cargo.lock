@@ -1,36 +1,4 @@
 [root]
 name = "unicorn"
 version = "0.1.0"
-dependencies = [
- "channelhandler 0.1.0",
- "core 0.1.0",
- "dataelement 0.1.0",
- "datastore 0.1.0",
- "gateway 0.1.0",
- "message 0.1.0",
-]
-
-[[package]]
-name = "channelhandler"
-version = "0.1.0"
-
-[[package]]
-name = "core"
-version = "0.1.0"
-
-[[package]]
-name = "dataelement"
-version = "0.1.0"
-
-[[package]]
-name = "datastore"
-version = "0.1.0"
-
-[[package]]
-name = "gateway"
-version = "0.1.0"
-
-[[package]]
-name = "message"
-version = "0.1.0"
 

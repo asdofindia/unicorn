@@ -13,9 +13,3 @@ connect any number and combination of clients (humans or machines).
 """
 
 [dependencies]
-channelhandler = { path = "channelhandler" }
-core = { path = "core" }
-dataelement = { path = "dataelement" }
-datastore = { path = "datastore" }
-gateway = { path = "gateway" }
-message = { path = "message" }

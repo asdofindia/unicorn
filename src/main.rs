@@ -1,6 +1,4 @@
 extern crate unicorn;
-extern crate core;
-extern crate gateway;
 
 use std::env;
 
@@ -24,8 +22,8 @@ fn main() {
     if let Some(arg) = env::args().nth(1) {
         match arg.as_ref() {
             "--version" => print_version(),
-            "core" => core::run(),
-            "gateway" => gateway::run(),
+            "core" => unicorn::core::run(),
+            "gateway" => unicorn::gateway::run(),
             _ => help(),
         }
     } else {

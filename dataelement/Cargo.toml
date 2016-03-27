@@ -1,6 +1,0 @@
-[package]
-name = "dataelement"
-version = "0.1.0"
-authors = ["The Muktakosh Project Developers"]
-
-[dependencies]
