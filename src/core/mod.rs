@@ -1,3 +1,3 @@
 pub use self::server::run;
 
-mod server;
+pub mod server;

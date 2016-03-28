@@ -1,3 +1,3 @@
-pub fn run() {
-    println!("Running gateway...");
-}
+pub use self::client::run;
+
+pub mod client;
