@@ -11,6 +11,7 @@ Please refrain from contributing patches that conflict with the LICENSE or that 
 ### Pre-requisites
 
 - [Rust](https://www.rust-lang.org/) v1.7.0+ with `cargo`.
+- [Requirements to Build CZMQ](https://github.com/zeromq/czmq#building-and-installing) 
 
 ### Building from source
 
