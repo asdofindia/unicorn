@@ -13,6 +13,5 @@ connect any number and combination of clients (humans or machines).
 """
 
 [dependencies]
-serde = "*"
-serde_json = "*"
+rustc-serialize = "0.3"
 zmq = { git = "https://github.com/erickt/rust-zmq.git" }
