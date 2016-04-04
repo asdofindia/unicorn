@@ -16,38 +16,46 @@ pub fn decode<T: Decodable>(encodedstr: &str) -> T {
     json::decode(&encodedstr).unwrap()
 }
 
-/// Test message::encode
-#[test]
-fn test_message_encode() {
 
-    #[allow(unstable)]
-    #[derive(RustcEncodable)]
-    struct Testjson {
-        id: i32,
-        data: String
+/// Unit tests for messages methods
+#[cfg(test)]
+mod tests {
+
+    use super::{encode, decode};
+
+    /// Test message::encode
+    #[test]
+    fn test_message_encode() {
+
+        #[allow(unstable)]
+        #[derive(RustcEncodable)]
+        struct Testjson {
+            id: i32,
+            data: String
+        }
+
+        let tj = Testjson { id: 1, data: "Hello".to_string() };
+
+        assert_eq!(encode(&tj), "{\"id\":1,\"data\":\"Hello\"}");
     }
 
-    let tj = Testjson { id: 1, data: "Hello".to_string() };
+    /// Test message::decode
+    #[test]
+    fn test_message_decode() {
 
-    assert_eq!(encode(&tj), "{\"id\":1,\"data\":\"Hello\"}");
-}
+        #[allow(unstable)]
+        #[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
+        struct Testjson {
+            id: i32,
+            data: String,
+            isit: bool,
+            things: Vec<i32>
+        }
 
-/// Test message::decode
-#[test]
-fn test_message_decode() {
+        let tj = Testjson { id: 1, data: "Hello".to_string(), isit: true, things: vec![2, 3, 4] };
+        let tjen = encode(&tj);
+        let tjde = decode(&tjen);
 
-    #[allow(unstable)]
-    #[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
-    struct Testjson {
-        id: i32,
-        data: String,
-        isit: bool,
-        things: Vec<i32>
+        assert_eq!(tj, tjde);
     }
-
-    let tj = Testjson { id: 1, data: "Hello".to_string(), isit: true, things: vec![2, 3, 4] };
-    let tjen = encode(&tj);
-    let tjde = decode(&tjen);
-
-    assert_eq!(tj, tjde);
 }
