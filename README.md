@@ -21,7 +21,7 @@ audio, video, text or binary data.
 
 ## Contribute
 
-For build instructions, setup information and general contribution requirements, see [CONTRIBUTORS.md](CONTRIBUTORS.md).
+For build instructions, setup information and general contribution requirements, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Community
 
