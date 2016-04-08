@@ -1,6 +1,7 @@
 This document states the software used to build, deploy and distribute unicorn.
 
-- "The Rust Programming Language" (rustc) by The Rust Project Developers under the Apache License v2.0 :: https://rust-lang.org
-- "Cargo: The Rust package manager" by The Rust Project Developers under the Apache License v2.0 :: https://crates.io
-- "libzmq: ZeroMQ Core Engine" by Pieter Hintjens and contributors under the GNU Lesser Public License v3.0 :: https://github.com/zeromq/libzmq
+- "The Rust Programming Language" (rustc)  under the Apache License v2.0 :: https://rust-lang.org
+- "Cargo: The Rust package manager" under the Apache License v2.0 :: https://crates.io
+- "libzmq: ZeroMQ Core Engine" under the GNU Lesser Public License v3.0 :: https://github.com/zeromq/libzmq
 - "rust-zmq" by Erick Tryzelaar under the Apache License v2.0 :: https://github.com/zeromq/libzmq
+- "rustc-serialize" under the Apache License v2.0 :: https://github.com/rust-lang-nursery/rustc-serialize
