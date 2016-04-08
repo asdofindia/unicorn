@@ -13,17 +13,17 @@ pub mod core;
 /// Generic error type for messages
 #[allow(unstable)]
 #[derive(RustcEncodable, RustcDecodable, Debug)]
-pub struct ErrMsg {
+pub struct MsgError {
     pub msg: String
 }
 
-impl fmt::Display for ErrMsg {
+impl fmt::Display for MsgError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "(Message Error: {})", self.msg)
     }
 }
 
-impl Error for ErrMsg {
+impl Error for MsgError {
     fn description(&self) -> &str {
         &self.msg[..]
     }
@@ -35,7 +35,7 @@ pub fn encode<T: Encodable>(msg: &T) -> String {
     match json::encode(&msg) {
         Ok(msgstr) => msgstr,
         Err(e) => {
-            encode(&ErrMsg {
+            encode(&MsgError {
                 msg: e.to_string()
             })
         }
