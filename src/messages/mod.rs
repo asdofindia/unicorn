@@ -1,19 +1,50 @@
 //! Module for stating message contracts and decoding/encoding messages
 
 extern crate rustc_serialize;
+
+use std::error::Error;
+use std::fmt;
 use rustc_serialize::{json, Encodable, Decodable};
 
 pub mod common;
 pub mod core;
 
+
+/// Generic error type for messages
+#[allow(unstable)]
+#[derive(RustcEncodable, RustcDecodable, Debug)]
+pub struct ErrMsg {
+    pub msg: String
+}
+
+impl fmt::Display for ErrMsg {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "(Message Error: {})", self.msg)
+    }
+}
+
+impl Error for ErrMsg {
+    fn description(&self) -> &str {
+        &self.msg[..]
+    }
+}
+
+
 /// Generic encoder for all messages. Encodes message structs to JSON strings
 pub fn encode<T: Encodable>(msg: &T) -> String {
-    json::encode(&msg).unwrap()
+    match json::encode(&msg) {
+        Ok(msgstr) => msgstr,
+        Err(e) => {
+            encode(&ErrMsg {
+                msg: e.to_string()
+            })
+        }
+    }
 }
 
 /// Generic decoder for all messages. Decodes JSON strings to message structs
-pub fn decode<T: Decodable>(encodedstr: &str) -> T {
-    json::decode(&encodedstr).unwrap()
+pub fn decode<T: Decodable>(encodedstr: &str) -> Result<T, json::DecoderError> {
+    json::decode(&encodedstr)
 }
 
 
@@ -56,6 +87,6 @@ mod tests {
         let tjen = encode(&tj);
         let tjde = decode(&tjen);
 
-        assert_eq!(tj, tjde);
+        assert_eq!(tj, tjde.unwrap());
     }
 }
