@@ -11,7 +11,38 @@ Please refrain from contributing patches that conflict with the LICENSE or that 
 ### Pre-requisites
 
 - [Rust](https://www.rust-lang.org/) v1.7.0+ with `cargo`.
-- [Requirements to Build CZMQ](https://github.com/zeromq/czmq#building-and-installing) 
+
+#### Debian/Ubuntu
+
+```sh
+sudo apt-get install libzmq3-dev
+```
+
+#### All GNU/Linux
+
+Download latest [libzmq stable release](http://download.zeromq.org/zeromq-4.1.4.tar.gz) and install libsodium.
+
+```sh
+# Install libsodium before the next step
+./configure --with-libsodium
+make check
+sudo make install
+sudo ldconfig
+```
+
+#### OSX
+
+Add `LIBRARY_PATH` environment variable:
+
+```sh
+export LIBRARY_PATH="/usr/local/lib"
+```
+
+Install `zeromq` from Homebrew:
+
+```sh
+brew install zeromq --with-libpgm --with-libsodium
+```
 
 ### Building from source
 
