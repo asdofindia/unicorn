@@ -3,48 +3,70 @@
 extern crate rustc_serialize;
 
 use std::error::Error;
-use std::fmt;
+use std::{fmt, result};
 use rustc_serialize::{json, Encodable, Decodable};
 
 pub mod common;
 pub mod core;
 
 
+/// Main result type for messages
+type MsgResult<T> = result::Result<T, MsgError>;
+
+/// Message encode result object
+pub type MsgEncodeResult<String> = MsgResult<String>;
+
+/// Message decode result object
+pub type MsgDecodeResult<T> = MsgResult<T>;
+
 /// Generic error type for messages
 #[allow(unstable)]
 #[derive(RustcEncodable, RustcDecodable, Debug)]
 pub struct MsgError {
-    pub msg: String
+    pub msg: String,
+    pub errtype: MsgErrorType,
 }
 
-impl fmt::Display for MsgError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "(Message Error: {})", self.msg)
-    }
-}
-
-impl Error for MsgError {
-    fn description(&self) -> &str {
-        &self.msg[..]
-    }
-}
-
-
-/// Generic encoder for all messages. Encodes message structs to JSON strings
-pub fn encode<T: Encodable>(msg: &T) -> String {
-    match json::encode(&msg) {
-        Ok(msgstr) => msgstr,
-        Err(e) => {
-            encode(&MsgError {
-                msg: e.to_string()
-            })
+impl MsgError {
+    pub fn new(msg: String, errtype: MsgErrorType) -> MsgError {
+        MsgError {
+            msg: msg,
+            errtype: errtype,
         }
     }
 }
 
+impl fmt::Display for MsgError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { write!(f, "(Message Error: {})", self.msg) }
+}
+
+impl Error for MsgError {
+    fn description(&self) -> &str { &self.msg[..] }
+}
+
+/// Error types for messages
+#[derive(RustcEncodable, RustcDecodable, Debug)]
+pub enum MsgErrorType {
+    EncodeError,
+    DecodeError,
+    InvalidComponentError,
+}
+
+
+/// Generic encoder for all messages. Encodes message structs to JSON strings
+pub fn encode<T: Encodable>(msg: &T) -> MsgEncodeResult<String> {
+    match json::encode(&msg) {
+        Ok(msg) => Ok(msg),
+        Err(e) => Err(MsgError::new(e.to_string(), MsgErrorType::EncodeError)),
+    }
+}
+
 /// Generic decoder for all messages. Decodes JSON strings to message structs
-pub fn decode<T: Decodable>(encodedstr: &str) -> Result<T, json::DecoderError> {
-    json::decode(&encodedstr)
+pub fn decode<T: Decodable>(encodedstr: &str) -> MsgDecodeResult<T> {
+    match json::decode(&encodedstr) {
+        Ok(enc) => Ok(enc),
+        Err(e) => Err(MsgError::new(e.to_string(), MsgErrorType::DecodeError)),
+    }
 }
 
 
@@ -62,12 +84,15 @@ mod tests {
         #[derive(RustcEncodable)]
         struct Testjson {
             id: i32,
-            data: String
+            data: String,
         }
 
-        let tj = Testjson { id: 1, data: "Hello".to_string() };
+        let tj = Testjson {
+            id: 1,
+            data: "Hello".to_string(),
+        };
 
-        assert_eq!(encode(&tj), "{\"id\":1,\"data\":\"Hello\"}");
+        assert_eq!(encode(&tj).unwrap(), "{\"id\":1,\"data\":\"Hello\"}");
     }
 
     /// Test message::decode
@@ -80,13 +105,18 @@ mod tests {
             id: i32,
             data: String,
             isit: bool,
-            things: Vec<i32>
+            things: Vec<i32>,
         }
 
-        let tj = Testjson { id: 1, data: "Hello".to_string(), isit: true, things: vec![2, 3, 4] };
-        let tjen = encode(&tj);
-        let tjde = decode(&tjen);
+        let tj = Testjson {
+            id: 1,
+            data: "Hello".to_string(),
+            isit: true,
+            things: vec![2, 3, 4],
+        };
+        let tjen = encode(&tj).unwrap();
+        let tjde = decode(&tjen).unwrap();
 
-        assert_eq!(tj, tjde.unwrap());
+        assert_eq!(tj, tjde);
     }
 }
