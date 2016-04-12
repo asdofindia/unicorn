@@ -4,7 +4,7 @@ extern crate rustc_serialize;
 extern crate zmq;
 
 use std::error::Error;
-use std::{fmt, result};
+use std::{fmt, result, str};
 use rustc_serialize::{json, Encodable, Decodable};
 
 pub mod common;
@@ -71,9 +71,11 @@ pub fn decode<T: Decodable>(encodedstr: &str) -> MsgDecodeResult<T> {
 }
 
 /// Decodes ZeroMQ messages to message structs
-pub fn decode_zmq<'a, T: Decodable>(msg: zmq::Message) -> MsgDecodeResult<T> {
-    let s: &'a str = try!(msg.as_str());
-    decode(&s)
+pub fn decode_zmq<'a, T: Decodable>(msg: &'a zmq::Message) -> MsgDecodeResult<T> {
+    match msg.as_str() {
+        Some(mstr) => decode(mstr),
+        None => Err(MsgError::new("Unable to decode encoded message".to_string(), MsgErrorType::DecodeError)),
+    }
 }
 
 
@@ -81,39 +83,34 @@ pub fn decode_zmq<'a, T: Decodable>(msg: zmq::Message) -> MsgDecodeResult<T> {
 #[cfg(test)]
 mod tests {
 
-    use super::{encode, decode};
+    use super::{encode, decode, decode_zmq, zmq};
+
+    #[allow(unstable)]
+    #[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
+    struct Testjson {
+        id: i32,
+        data: String,
+        isit: bool,
+        things: Vec<i32>,
+    }
 
     /// Test message::encode
     #[test]
     fn test_message_encode() {
 
-        #[allow(unstable)]
-        #[derive(RustcEncodable)]
-        struct Testjson {
-            id: i32,
-            data: String,
-        }
-
         let tj = Testjson {
             id: 1,
             data: "Hello".to_string(),
+            isit: true,
+            things: vec![4, 2],
         };
 
-        assert_eq!(encode(&tj).unwrap(), "{\"id\":1,\"data\":\"Hello\"}");
+        assert_eq!(encode(&tj).unwrap(), "{\"id\":1,\"data\":\"Hello\",\"isit\":true,\"things\":[4,2]}");
     }
 
     /// Test message::decode
     #[test]
     fn test_message_decode() {
-
-        #[allow(unstable)]
-        #[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
-        struct Testjson {
-            id: i32,
-            data: String,
-            isit: bool,
-            things: Vec<i32>,
-        }
 
         let tj = Testjson {
             id: 1,
@@ -123,6 +120,24 @@ mod tests {
         };
         let tjen = encode(&tj).unwrap();
         let tjde = decode(&tjen).unwrap();
+
+        assert_eq!(tj, tjde);
+    }
+
+    /// Test message::decode_zmq
+    #[test]
+    fn test_message_decode_zmq() {
+
+        let tj = Testjson {
+            id: 1,
+            data: "Hello".to_string(),
+            isit: true,
+            things: vec![2, 3, 4],
+        };
+
+        let tjen = encode(&tj).unwrap();
+        let zmqmsg = zmq::Message::from_slice(&tjen.as_bytes()).unwrap();
+        let tjde = decode_zmq(&zmqmsg).unwrap();
 
         assert_eq!(tj, tjde);
     }
