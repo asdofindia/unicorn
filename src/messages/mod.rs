@@ -1,6 +1,7 @@
 //! Module for stating message contracts and decoding/encoding messages
 
 extern crate rustc_serialize;
+extern crate zmq;
 
 use std::error::Error;
 use std::{fmt, result};
@@ -67,6 +68,12 @@ pub fn decode<T: Decodable>(encodedstr: &str) -> MsgDecodeResult<T> {
         Ok(enc) => Ok(enc),
         Err(e) => Err(MsgError::new(e.to_string(), MsgErrorType::DecodeError)),
     }
+}
+
+/// Decodes ZeroMQ messages to message structs
+pub fn decode_zmq<'a, T: Decodable>(msg: zmq::Message) -> MsgDecodeResult<T> {
+    let s: &'a str = try!(msg.as_str());
+    decode(&s)
 }
 
 
