@@ -4,7 +4,7 @@ use std::env;
 
 fn help() {
     println!("unicorn :: Unified Communications Over Real-time Networks");
-    println!("Version: v{}", unicorn::VERSION);
+    println!("Version: v{}", unicorn::get_version());
     println!("\nUsage: unicorn [command] [[args]]");
     println!("\nAvailable commands:");
     println!(" core - Run unicorn core service");
@@ -15,7 +15,7 @@ fn help() {
 }
 
 fn print_version() {
-    println!("{}", unicorn::VERSION);
+    println!("{}", unicorn::get_version());
 }
 
 fn main() {
