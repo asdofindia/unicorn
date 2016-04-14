@@ -1,8 +1,10 @@
 //! Module for stating message contracts and decoding/encoding messages
 //!
-//! Example:
+//! Example usage:
 //!
 //! ```
+//! use unicorn::messages::{common, Msg, encode, decode};
+//!
 //! // All messages need an ID. So, create one first.
 //! let id = common::ID {
 //!     uuid: "_test".to_string(),
@@ -13,10 +15,10 @@
 //! let heartbeat = Msg::Heartbeat { id: id, count: 1 };
 //!
 //! // Encode the message to JSON bytes
-//! let jbytes = encode(&heartbeat);
+//! let jbytes = encode(&heartbeat).unwrap();
 //!
 //! // Decode the JSON bytes to original message
-//! let jmsg = decode(&jbytes);
+//! let jmsg = decode(&jbytes).unwrap();
 //! ```
 //!
 #![allow(unstable)]
