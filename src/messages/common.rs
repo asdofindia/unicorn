@@ -3,7 +3,7 @@
 
 
 /// List of main component types in unicorn
-#[derive(RustcEncodable, RustcDecodable, Debug)]
+#[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
 pub enum Components {
     Core = 0,
     Gateway = 1,
@@ -14,7 +14,7 @@ pub enum Components {
 }
 
 /// Different states in which a component can be at any given time
-#[derive(RustcEncodable, RustcDecodable, Debug)]
+#[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
 pub enum State {
     CONNECTING = 0,
     READY = 1,
@@ -25,24 +25,9 @@ pub enum State {
     OFFLINE = 99,
 }
 
-/// Identify message. Used by every message that needs an ID
-#[derive(RustcEncodable, RustcDecodable, Debug)]
+/// Identity message. Used by every message that needs an ID
+#[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
 pub struct ID {
     pub uuid: String,
     pub component: Components,
-}
-
-/// Heartbeat message. Used to check liveliness of connected peers.
-#[derive(RustcEncodable, RustcDecodable, Debug)]
-pub struct Heartbeat {
-    pub id: ID,
-    pub count: i32,
-}
-
-/// Status message. Used to send status of different components
-#[derive(RustcEncodable, RustcDecodable, Debug)]
-pub struct Status {
-    pub id: ID,
-    pub state: State,
-    pub msg: Option<String>,
 }

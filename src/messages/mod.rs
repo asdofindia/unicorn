@@ -1,144 +1,47 @@
 //! Module for stating message contracts and decoding/encoding messages
+//!
+//! Example:
+//!
+//! ```
+//! // All messages need an ID. So, create one first.
+//! let id = common::ID {
+//!     uuid: "_test".to_string(),
+//!     component: common::Components::Core,
+//! };
+//!
+//! // Create a Heartbeat message
+//! let heartbeat = Msg::Heartbeat { id: id, count: 1 };
+//!
+//! // Encode the message to JSON bytes
+//! let jbytes = encode(&heartbeat);
+//!
+//! // Decode the JSON bytes to original message
+//! let jmsg = decode(&jbytes);
+//! ```
+//!
+#![allow(unstable)]
 
-extern crate rustc_serialize;
 extern crate zmq;
-
-use std::error::Error;
-use std::{fmt, result, str};
-use rustc_serialize::{json, Encodable, Decodable};
 
 pub mod common;
 pub mod core;
+mod utils;
 
+pub use self::utils::*;
 
-/// Main result type for messages
-type MsgResult<T> = result::Result<T, MsgError>;
+/// Message structure definitions. Each variant of this enum forms a type of message.
+#[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
+pub enum Msg {
+    /// Status message. Used to send status of different components
+    Status {
+        id: common::ID,
+        state: common::State,
+        msg: Option<String>,
+    },
 
-/// Message encode result object
-pub type MsgEncodeResult<String> = MsgResult<String>;
-
-/// Message decode result object
-pub type MsgDecodeResult<T> = MsgResult<T>;
-
-/// Generic error type for messages
-#[allow(unstable)]
-#[derive(RustcEncodable, RustcDecodable, Debug)]
-pub struct MsgError {
-    pub msg: String,
-    pub errtype: MsgErrorType,
-}
-
-impl MsgError {
-    pub fn new(msg: String, errtype: MsgErrorType) -> MsgError {
-        MsgError {
-            msg: msg,
-            errtype: errtype,
-        }
-    }
-}
-
-impl fmt::Display for MsgError {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result { write!(f, "(Message Error: {})", self.msg) }
-}
-
-impl Error for MsgError {
-    fn description(&self) -> &str { &self.msg[..] }
-}
-
-/// Error types for messages
-#[derive(RustcEncodable, RustcDecodable, Debug)]
-pub enum MsgErrorType {
-    EncodeError,
-    DecodeError,
-    InvalidComponentError,
-}
-
-
-/// Generic encoder for all messages. Encodes message structs to JSON strings
-pub fn encode<T: Encodable>(msg: &T) -> MsgEncodeResult<String> {
-    match json::encode(&msg) {
-        Ok(msg) => Ok(msg),
-        Err(e) => Err(MsgError::new(e.to_string(), MsgErrorType::EncodeError)),
-    }
-}
-
-/// Generic decoder for all messages. Decodes JSON strings to message structs
-pub fn decode<T: Decodable>(encodedstr: &str) -> MsgDecodeResult<T> {
-    match json::decode(&encodedstr) {
-        Ok(enc) => Ok(enc),
-        Err(e) => Err(MsgError::new(e.to_string(), MsgErrorType::DecodeError)),
-    }
-}
-
-/// Decodes ZeroMQ messages to message structs
-pub fn decode_zmq<'a, T: Decodable>(msg: &'a zmq::Message) -> MsgDecodeResult<T> {
-    match msg.as_str() {
-        Some(mstr) => decode(mstr),
-        None => Err(MsgError::new("Unable to decode encoded message".to_string(), MsgErrorType::DecodeError)),
-    }
-}
-
-
-/// Unit tests for messages methods
-#[cfg(test)]
-mod tests {
-
-    use super::{encode, decode, decode_zmq, zmq};
-
-    #[allow(unstable)]
-    #[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
-    struct Testjson {
-        id: i32,
-        data: String,
-        isit: bool,
-        things: Vec<i32>,
-    }
-
-    /// Test message::encode
-    #[test]
-    fn test_message_encode() {
-
-        let tj = Testjson {
-            id: 1,
-            data: "Hello".to_string(),
-            isit: true,
-            things: vec![4, 2],
-        };
-
-        assert_eq!(encode(&tj).unwrap(), "{\"id\":1,\"data\":\"Hello\",\"isit\":true,\"things\":[4,2]}");
-    }
-
-    /// Test message::decode
-    #[test]
-    fn test_message_decode() {
-
-        let tj = Testjson {
-            id: 1,
-            data: "Hello".to_string(),
-            isit: true,
-            things: vec![2, 3, 4],
-        };
-        let tjen = encode(&tj).unwrap();
-        let tjde = decode(&tjen).unwrap();
-
-        assert_eq!(tj, tjde);
-    }
-
-    /// Test message::decode_zmq
-    #[test]
-    fn test_message_decode_zmq() {
-
-        let tj = Testjson {
-            id: 1,
-            data: "Hello".to_string(),
-            isit: true,
-            things: vec![2, 3, 4],
-        };
-
-        let tjen = encode(&tj).unwrap();
-        let zmqmsg = zmq::Message::from_slice(&tjen.as_bytes()).unwrap();
-        let tjde = decode_zmq(&zmqmsg).unwrap();
-
-        assert_eq!(tj, tjde);
-    }
+    /// Heartbeat message. Used to check liveliness of connected peers.
+    Heartbeat {
+        id: common::ID,
+        count: i32,
+    },
 }
