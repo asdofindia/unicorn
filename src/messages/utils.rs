@@ -42,6 +42,15 @@ pub fn decode_zmq<'a>(msg: &'a zmq::Message) -> Option<Msg> {
 }
 
 
+/// Procedure for sending messages through a specified socket
+pub fn send(b: &[u8], sock: &mut zmq::Socket) {
+    match sock.send(b, 0) {
+        Ok(()) => println!("[Message] Sent: Length: {}", b.len()),
+        Err(e) => println!("[Message] Error sending message: {}", e.description()),
+    }
+}
+
+
 /// Unit tests for messages utility methods
 #[cfg(test)]
 mod tests {
