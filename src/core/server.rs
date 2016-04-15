@@ -1,5 +1,8 @@
 extern crate zmq;
 
+use super::processor;
+use messages::send;
+
 /// Run the core service
 ///
 /// This function is called when you run `$ unicorn core`.
@@ -33,12 +36,11 @@ pub fn run() {
     // Loop to listen
     loop {
         match rep_socket.recv(&mut msg, 0) {
-            Ok(()) => println!("[core] Received request: {}", msg.as_str().unwrap()),
-            Err(e) => panic!("Error decoding request message: {:?}", e),
-        }
-        match rep_socket.send(b"ACK", 0) {
-            Ok(()) => println!("[core] Sending response: \"{}\"", "ACK"),
-            Err(e) => panic!("Error sending response: {:?}", e),
+            Ok(()) => processor::process_msg(&mut msg, &mut rep_socket), // Start processing received message
+            Err(e) => {
+                send(b"ERROR", &mut rep_socket);
+                println!("[core] Error receiving message: {:?}", e)
+            }
         }
     }
 }
