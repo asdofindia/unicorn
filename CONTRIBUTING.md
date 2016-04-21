@@ -10,7 +10,7 @@ Please refrain from contributing patches that conflict with the LICENSE or that 
 
 ### Pre-requisites
 
-- [Rust](https://www.rust-lang.org/) v1.7.0+ with `cargo`.
+- [Rust](https://www.rust-lang.org/) `stable` (v1.8.0+) with `cargo`.
 
 #### Debian/Ubuntu
 
