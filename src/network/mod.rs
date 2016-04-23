@@ -54,23 +54,26 @@ impl Net {
             Status::READY => {
                 println!("[net] Ready to recv on {}", &self.addr);
                 match self.listener {
-                    Some(l) => {
-                        for stream in l.incoming() {
-                            match stream {
-                                Ok(stream) => {
-                                    let s = Stream::new(stream);
-                                    s.process(processor);
-                                }
-                                Err(_) => println!(""),
-                            }
-                        }
-                    },
-                    None => println!("[net] Listener is not available")
+                    Some(l) => Net::stream_loop(l, processor),
+                    None => println!("[net] Listener is not available"),
                 }
             }
             _ => println!("[net] Network interface is not ready"),
         }
 
+    }
+
+    /// Loop over incoming listener streams and set processor
+    fn stream_loop(l: TcpListener, processor: &Fn(String, Stream)) {
+        for stream in l.incoming() {
+            match stream {
+                Ok(stream) => {
+                    let s = Stream::new(stream);
+                    s.process(processor);
+                }
+                Err(_) => println!("[net] Could not grab incoming stream"),
+            }
+        }
     }
 }
 
