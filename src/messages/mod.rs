@@ -18,12 +18,10 @@
 //! let jbytes = encode(&heartbeat).unwrap();
 //!
 //! // Decode the JSON bytes to original message
-//! let jmsg = decode(&jbytes).unwrap();
+//! let jmsg = decode(jbytes).unwrap();
 //! ```
 //!
 #![allow(unstable)]
-
-extern crate zmq;
 
 pub mod common;
 pub mod core;

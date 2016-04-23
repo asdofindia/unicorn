@@ -1,7 +1,5 @@
-extern crate zmq;
-
-use std::thread;
-use std::time::Duration;
+use network::Stream;
+use messages;
 
 /// Run the gateway service
 ///
@@ -10,42 +8,19 @@ pub fn run() {
     println!("Running gateway...");
 
     // Address of the REP socket
-    let addr_rep = "tcp://127.0.0.1:69369";
+    let core_addr = "127.0.0.1:60000".to_string();
 
-    // Create a new ZMQ context
-    let mut ctx = zmq::Context::new();
+    let mut stream = Stream::connect(core_addr).unwrap();
 
-    // Create a REQ socket
-    let mut req_socket = match ctx.socket(zmq::REQ) {
-        Ok(socket) => socket,
-        Err(e) => panic!("Error creating REQ socket: {:?}", e),
+    let msg: messages::Msg = messages::Msg::Status {
+        id: messages::common::ID {
+            uuid: "_gateway".to_string(),
+            component: messages::common::Components::Gateway,
+        },
+        state: messages::common::State::READY,
+        msg: Some("Trying out stuff".to_string()),
     };
 
-    // Bind the REQ socket
-    match req_socket.connect(addr_rep) {
-        Ok(()) => println!("[gateway] connected to core at {}", addr_rep),
-        Err(e) => panic!("Error connecting to REP socket at \"{}\": {:?}", addr_rep, e),
-    }
+    stream.send(messages::encode(&msg).unwrap().as_bytes());
 
-    // We store messages in this buffer
-    let mut msg = match zmq::Message::new() {
-        Ok(msg) => msg,
-        Err(e) => panic!("Error creating new message: {:?}", e)
-    };
-
-    // Loop to listen
-    loop {
-        // Send message
-        match req_socket.send(b"Gateway PING", 0) {
-            Ok(()) => println!("[gateway] Sending message: {}", "Gateway PING"),
-            Err(e) => panic!("Error sending request: {:?}", e)
-        }
-
-        // Receive message
-        match req_socket.recv(&mut msg, 0) {
-            Ok(()) => println!("[gateway] Receiving message: {}", msg.as_str().unwrap()),
-            Err(e) => panic!("Error decoding response message: {:?}", e)
-        }
-        thread::sleep(Duration::new(1, 0));
-    }
 }

@@ -1,7 +1,6 @@
 //! Utilities for encoding and decoding messages
 
 extern crate rustc_serialize;
-extern crate zmq;
 
 use std::error::Error;
 use rustc_serialize::json;
@@ -20,8 +19,8 @@ pub fn encode(msg: &Msg) -> Option<String> {
 }
 
 /// Generic decoder for all messages. Decodes JSON strings to message structures
-pub fn decode(encodedstr: &str) -> Option<Msg> {
-    match json::decode(&encodedstr) {
+pub fn decode(encodedstr: String) -> Option<Msg> {
+    match json::decode(&encodedstr[..]) {
         Ok(enc) => Some(enc),
         Err(e) => {
             println!("Cannot decode message: {}", e.description());
@@ -30,32 +29,12 @@ pub fn decode(encodedstr: &str) -> Option<Msg> {
     }
 }
 
-/// Decodes ZeroMQ messages to message structures
-pub fn decode_zmq<'a>(msg: &'a zmq::Message) -> Option<Msg> {
-    match msg.as_str() {
-        Some(mstr) => decode(mstr),
-        None => {
-            println!("Cannot decode zmq message.");
-            None
-        }
-    }
-}
-
-
-/// Procedure for sending messages through a specified socket
-pub fn send(b: &[u8], sock: &mut zmq::Socket) {
-    match sock.send(b, 0) {
-        Ok(()) => println!("[Message] Sent: Length: {}", b.len()),
-        Err(e) => println!("[Message] Error sending message: {}", e.description()),
-    }
-}
-
 
 /// Unit tests for messages utility methods
 #[cfg(test)]
 mod tests {
 
-    use super::{encode, decode, decode_zmq, zmq};
+    use super::{encode, decode};
     use super::super::{Msg, common};
 
     fn dummy() -> Msg {
@@ -81,18 +60,7 @@ mod tests {
     fn test_message_decode() {
         let tj = dummy();
         let tjen = encode(&tj).unwrap();
-        let tjde = decode(&tjen).unwrap();
-
-        assert_eq!(tj, tjde);
-    }
-
-    /// Test message::decode_zmq
-    #[test]
-    fn test_message_decode_zmq() {
-        let tj = dummy();
-        let tjen = encode(&tj).unwrap();
-        let zmqmsg = zmq::Message::from_slice(&tjen.as_bytes()).unwrap();
-        let tjde = decode_zmq(&zmqmsg).unwrap();
+        let tjde = decode(tjen).unwrap();
 
         assert_eq!(tj, tjde);
     }

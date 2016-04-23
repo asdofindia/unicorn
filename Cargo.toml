@@ -14,7 +14,6 @@ connect any number and combination of clients (humans or machines).
 
 [dependencies]
 rustc-serialize = "0.3"
-zmq = { git = "https://github.com/erickt/rust-zmq.git" }
 
 [[bin]]
 name = "unicorn"

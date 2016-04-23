@@ -3,6 +3,7 @@ extern crate rustc_serialize;
 pub mod core;
 pub mod gateway;
 pub mod messages;
+pub mod network;
 
 /// unicorn version
 pub const VERSION: [i32; 3] = [0, 1, 0];
