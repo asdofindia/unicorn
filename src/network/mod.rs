@@ -1,5 +1,5 @@
-//! Message queue abstraction layer that handles low level network topology and
-//! exposes a simple higher level API
+//! Network abstraction layer that handles low level network topology
+//! and exposes a simple higher level API
 
 mod net;
 mod stream;
