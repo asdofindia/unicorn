@@ -41,6 +41,7 @@ impl Net {
             }
             Err(e) => {
                 println!("[mq] unable to bind to {}. Reason: {}", self.addr, e);
+                self.status = Status::ERROR;
                 None
             }
         };
