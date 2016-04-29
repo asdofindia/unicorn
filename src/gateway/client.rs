@@ -10,7 +10,15 @@ pub fn run() {
     // Address of the REP socket
     let core_addr = "127.0.0.1:60000".to_string();
 
-    let mut stream = Stream::connect(core_addr).unwrap();
+    let mut stream: Stream;
+
+    match Stream::connect(&core_addr, true) {
+        Ok(s) => stream = s,
+        Err(e) => {
+            println!("[gateway] Unable to connect to core at {}. Reason: {}", &core_addr, e);
+            return
+        }
+    };
 
     let msg: messages::Msg = messages::Msg::Status {
         id: messages::common::ID {
