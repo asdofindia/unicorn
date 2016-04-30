@@ -1,41 +1,39 @@
 //! Wrapper around TcpListener with convenience methods
 
 use std::net::TcpListener;
+use std::io::Error;
 
 use super::Status;
 use super::stream::Stream;
 
 /// Network structure that holds network topology information. Aka, the network interface.
 pub struct Net {
-    addr: String,
-    listener: Option<TcpListener>,
-    status: Status,
+    pub addr: String,
+    listener: TcpListener,
+    pub status: Status,
 }
 
 impl Net {
     /// Create a new network interface
-    pub fn new(addr: &str) -> Net {
+    pub fn new(a: String, l: TcpListener, s: Status) -> Net {
         Net {
-            addr: addr.to_string(),
-            listener: None,
-            status: Status::DISCONNECTED,
+            addr: a,
+            listener: l,
+            status: s,
         }
     }
 
     /// Start a listener on an existing network interface
-    pub fn bind(&mut self) -> Result<&mut Net, String> {
-        self.listener = match TcpListener::bind(&self.addr[..]) {
+    pub fn bind(addr: String) -> Result<Net, Error> {
+        match TcpListener::bind(&addr[..]) {
             Ok(l) => {
-                self.status = Status::READY;
-                Some(l)
+                Ok(Net::new(addr, l, Status::READY))
             }
             Err(e) => {
-                println!("[mq] unable to bind to {}. Reason: {}", self.addr, e);
-                self.status = Status::ERROR;
-                None
+                println!("[net] Unable to bind to {}. Reason: {}", &addr, e);
+                Err(e)
             }
-        };
-        Ok(self)
+        }
     }
 
     /// Process incoming TCP stream
@@ -43,10 +41,7 @@ impl Net {
         match self.status {
             Status::READY => {
                 println!("[net] Ready to recv on {}", &self.addr);
-                match self.listener {
-                    Some(l) => Net::stream_loop(l, processor),
-                    None => println!("[net] Listener is not available"),
-                }
+                self.stream_loop(processor)
             }
             _ => println!("[net] Network interface is not ready"),
         }
@@ -54,8 +49,8 @@ impl Net {
     }
 
     /// Loop over incoming listener streams and set processor
-    fn stream_loop(l: TcpListener, processor: &Fn(String, Stream)) {
-        for stream in l.incoming() {
+    fn stream_loop(self, processor: &Fn(String, Stream)) {
+        for stream in self.listener.incoming() {
             match stream {
                 Ok(stream) => {
                     let s = Stream::new(stream);
