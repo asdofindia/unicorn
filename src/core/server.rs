@@ -1,4 +1,5 @@
 use network::Net;
+
 use super::processor;
 
 /// Run the core service
@@ -12,9 +13,10 @@ pub fn run() {
     let addr = "127.0.0.1:60000".to_string();
 
     match Net::bind(addr) {
-        Ok(net) => {
-            println!("[core] Listening on {}", &net.addr);
-            net.recv(&processor::process_msg);
+        Ok((net, streamrx)) => {
+            println!("[core] Listening on {}", net.addr());
+            net.recv();
+            Net::process_streams(streamrx, &processor::process_msg);
         }
         Err(_) => println!("[core] Error binding listener"),
     }

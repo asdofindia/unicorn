@@ -5,6 +5,9 @@ use std::io::prelude::*;
 use std::io::Error;
 use std::thread::sleep;
 use std::time::Duration;
+use std::sync::mpsc::Sender;
+
+use messages::Msg;
 
 /// Structure that holds TcpStream and provides convenience methods
 pub struct Stream {
@@ -51,12 +54,12 @@ impl Stream {
     }
 
     /// Process a given TcpStream and invoke processor
-    pub fn process(mut self, processor: &Fn(String, Stream)) {
+    pub fn process(&mut self, processor: &Fn(String, Sender<Msg>), mtx: Sender<Msg>) {
         let mut buff = String::new();
         match self.stream.read_to_string(&mut buff) {
             Ok(n) => {
                 if n <= buff.len() {
-                    processor(buff, self);
+                    processor(buff, mtx);
                 }
             }
             Err(e) => {

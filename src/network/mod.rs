@@ -5,6 +5,7 @@ mod net;
 mod stream;
 
 /// List of states for a network connection
+#[derive(Copy, Clone)]
 pub enum Status {
     DISCONNECTED,
     CONNECTING,

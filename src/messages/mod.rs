@@ -44,4 +44,10 @@ pub enum Msg {
         id: common::ID,
         count: i32,
     },
+
+    /// Error message containing a description
+    Error(String),
+
+    /// Ok message. Sent to indicate success but nothing useful to return
+    Ok
 }
