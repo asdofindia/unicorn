@@ -103,13 +103,10 @@ impl Net {
             let mut n = msgrx.iter();
             loop {
                 if let Some(msg) = n.next() {
-                    println!("Got message back from processor");
                     match encode(&msg) {
                         Some(st) => {
-                            println!("Encoded message: {}", &st);
                             match sarc_loop.lock() {
                                 Ok(mut slock) => {
-                                    println!("Got lock. Sending message");
                                     slock.send(st.as_bytes());
                                 },
                                 Err(e) => println!("[net] Cannot get a lock on stream. {}", e)
