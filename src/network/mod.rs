@@ -4,6 +4,12 @@
 mod net;
 mod stream;
 
+pub use self::net::Net;
+pub use self::stream::Stream;
+
+use std::sync::mpsc::Sender;
+use messages::Msg;
+
 /// List of states for a network connection
 #[derive(Copy, Clone)]
 pub enum Status {
@@ -15,5 +21,7 @@ pub enum Status {
     ERROR,
 }
 
-pub use self::net::Net;
-pub use self::stream::Stream;
+/// Provides an interface for creating processor types
+pub trait Processor: Send + Sync {
+    fn process(&self, String, Sender<Msg>);
+}

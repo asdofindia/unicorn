@@ -10,28 +10,26 @@
 use std::net::TcpListener;
 use std::io::Error;
 use std::thread;
-use std::sync::mpsc::{channel, Sender, Receiver};
-use messages::Msg;
+use std::sync::mpsc::channel;
+use std::sync::{Arc, Mutex};
+use messages::{Msg, encode};
 
-use super::Status;
-use super::stream::Stream;
+use super::{Processor, Stream, Status};
 
 /// Network structure that holds network topology information. Aka, the network interface.
 pub struct Net {
     addr: String,
     listener: TcpListener,
-    status: Status,
-    tx: Sender<Box<Stream>>
+    status: Status
 }
 
 impl Net {
     /// Create a new network interface
-    fn new(a: String, l: TcpListener, s: Status, tx: Sender<Box<Stream>>) -> Net {
+    fn new(a: String, l: TcpListener, s: Status) -> Net {
         Net {
             addr: a,
             listener: l,
-            status: s,
-            tx: tx
+            status: s
         }
     }
 
@@ -46,11 +44,10 @@ impl Net {
     }
 
     /// Start a listener on an existing network interface
-    pub fn bind(addr: String) -> Result<(Net, Receiver<Box<Stream>>), Error> {
+    pub fn bind(addr: String) -> Result<Net, Error> {
         match TcpListener::bind(&addr[..]) {
             Ok(l) => {
-                let (tx, rx) = channel::<Box<Stream>>();
-                Ok((Net::new(addr, l, Status::READY, tx), rx))
+                Ok(Net::new(addr, l, Status::READY))
             }
             Err(e) => {
                 println!("[net] Unable to bind to {}. Reason: {}", &addr, e);
@@ -60,13 +57,11 @@ impl Net {
     }
 
     /// Process incoming TCP stream
-    pub fn recv(self) {
+    pub fn recv(&self, processor: &'static Processor) {
         match self.status {
             Status::READY => {
                 println!("[net] Ready to recv on {}", &self.addr);
-                thread::spawn(move || {
-                    self.stream_loop()
-                });
+                &self.stream_loop(processor);
             }
             _ => println!("[net] Network interface is not ready"),
         }
@@ -74,13 +69,13 @@ impl Net {
     }
 
     /// Loop over incoming listener streams and set processor
-    fn stream_loop(self) {
+    fn stream_loop(&self, processor: &'static Processor) {
         for stream in self.listener.incoming() {
             match stream {
                 Ok(stream) => {
-                    let s = Box::new(Stream::new(stream));
+                    let s = Arc::new(Mutex::new(Stream::new(stream)));
                     println!("Received stream. Sending...");
-                    self.tx.send(s).unwrap();
+                    self.process_stream(s, processor);
                 }
                 Err(_) => println!("[net] Could not grab incoming stream"),
             }
@@ -88,22 +83,42 @@ impl Net {
     }
 
     /// Process incoming TCP Streams
-    pub fn process_streams(rx: Receiver<Box<Stream>>, processor: &Fn(String, Sender<Msg>)) {
-        let mut n = rx.iter();
-        loop {
-            match n.next() {
-                Some(mut s) => {
-                    let (msgtx, msgrx) = channel::<Msg>();
-                    // @TODO: use `msgrx` to receive `Msg` sent by processor.
-                    loop {
-                        s.process(processor, msgtx.clone());
-                    }
-                },
-                None => {
-                    println!("[core] Net listener is possibly down. Dropping receiver.");
-                    break;
+    fn process_stream<'p>(&self, s: Arc<Mutex<Stream>>, processor: &'static Processor) {
+        let (msgtx, msgrx) = channel::<Msg>();
+        let sarc_th = s.clone();
+        thread::spawn(move || {
+            loop {
+                match sarc_th.lock() {
+                    Ok(mut slock) => {
+                        if let Some(st) = slock.recv() {
+                            processor.process(st, msgtx.clone());
+                        }
+                    },
+                    Err(e) => println!("[net] Cannot get a lock on stream. {}", e)
                 }
             }
-        }
+        });
+        let sarc_loop = s.clone();
+        thread::spawn(move || {
+            let mut n = msgrx.iter();
+            loop {
+                if let Some(msg) = n.next() {
+                    println!("Got message back from processor");
+                    match encode(&msg) {
+                        Some(st) => {
+                            println!("Encoded message: {}", &st);
+                            match sarc_loop.lock() {
+                                Ok(mut slock) => {
+                                    println!("Got lock. Sending message");
+                                    slock.send(st.as_bytes());
+                                },
+                                Err(e) => println!("[net] Cannot get a lock on stream. {}", e)
+                            }
+                        },
+                        None => break
+                    }
+                }
+            }
+        });
     }
 }
