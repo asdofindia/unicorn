@@ -6,52 +6,23 @@ unicorn is free and unencumbered software released into the public domain. We ca
 
 Please refrain from contributing patches that conflict with the LICENSE or that you do not own the right to dedicate to public domain.
 
-## Build
+## Build Instructions
 
-### Pre-requisites
-
-- [Rust](https://www.rust-lang.org/) `stable` (v1.8.0+) with `cargo`.
-
-#### Debian/Ubuntu
-
-```sh
-sudo apt-get install libzmq3-dev
-```
-
-#### All GNU/Linux
-
-Download latest [libzmq stable release](http://download.zeromq.org/zeromq-4.1.4.tar.gz) and install libsodium.
-
-```sh
-# Install libsodium before the next step
-./configure --with-libsodium
-make check
-sudo make install
-sudo ldconfig
-```
-
-#### OSX
-
-Add `LIBRARY_PATH` environment variable:
-
-```sh
-export LIBRARY_PATH="/usr/local/lib"
-```
-
-Install `zeromq` from Homebrew:
-
-```sh
-brew install zeromq --with-libpgm --with-libsodium
-```
-
-### Building from source
+- Download and install [Rust](https://www.rust-lang.org/) `stable` (v1.8.0+) with `cargo`.
 
 - Clone the repo
+
 - At the root of the repo, run:
 
-      ```
-      $ cargo build
-      ```
+    ```
+    $ cargo build
+    ```
+
+- On OSX, add `LIBRARY_PATH` environment variable:
+
+    ```sh
+    export LIBRARY_PATH="/usr/local/lib"
+    ```
 
 This will create the compiled binary at `./target/debug/unicorn`.
 
