@@ -1,11 +1,4 @@
 //! Wrapper around TcpListener with convenience methods.
-//!
-//! `Net` provides a higher-level abstraction of TCP listener sockets,
-//! allowing implementations of basic request-reply and pub-sub
-//! messaging architectures.
-//!
-//! `Net` wraps around `std::net::TcpListener` and uses channels to
-//! communicate with incoming `TcpStream`s.
 
 use std::net::TcpListener;
 use std::io::Error;
@@ -16,7 +9,25 @@ use messages::{Msg, encode};
 
 use super::{Processor, Stream, Status};
 
-/// Network structure that holds network topology information. Aka, the network interface.
+/// Network structure that holds network topology information. Aka,
+/// the network interface.
+///
+/// `Net` provides a higher-level abstraction of TCP listener
+/// sockets. It does not impose any pattern, but it can be used to
+/// implement basic request-reply and pub-sub messaging architectures.
+///
+/// `Net` wraps around `std::net::TcpListener` and uses channels to
+/// communicate with incoming `TcpStream`s.
+///
+/// ## Using `Net`
+///
+/// `Net` works in 2 steps:
+///
+/// - Bind a listener using `Net::bind(addr)`. This starts a
+/// TcpListener on the specified address and returns an instance of
+/// `Net`.
+/// - Start accepting connections by calling `.recv(processor)` on the
+/// returned `Net` instance.
 pub struct Net {
     addr: String,
     listener: TcpListener,
