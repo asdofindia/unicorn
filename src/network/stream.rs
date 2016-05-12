@@ -7,14 +7,16 @@ use std::thread::sleep;
 use std::time::Duration;
 use std::string::String;
 
+use bufstream::BufStream;
+
 /// Structure that holds TcpStream and provides convenience methods
 pub struct Stream {
-    stream: TcpStream,
+    stream: BufStream<TcpStream>,
 }
 
 impl Stream {
     /// Create a new stream
-    pub fn new(stream: TcpStream) -> Stream { Stream { stream: stream } }
+    pub fn new(stream: TcpStream) -> Stream { Stream { stream: BufStream::new(stream) } }
 
     /// Try connecting to remote TCP socket only once
     fn connect_once(addr: &String) -> Result<Stream, Error> {
@@ -54,10 +56,10 @@ impl Stream {
     /// Process a given TcpStream and invoke processor
     pub fn recv(&mut self) -> Option<String> {
         let mut buff = String::new();
-        match self.stream.read_to_string(&mut buff) {
+        match self.stream.read_line(&mut buff) {
             Ok(n) => {
                 if n > 0 && n <= buff.len() {
-                    return Some(buff)
+                    return Some(String::from((&buff[..]).trim()))
                 }
                 None
             }
@@ -69,8 +71,9 @@ impl Stream {
     }
 
     /// Procedure for sending messages through a specified stream
-    pub fn send(&mut self, b: &[u8]) {
-        match self.stream.write(b) {
+    pub fn send(&mut self, mut b: Vec<u8>) {
+        b.push(0xA);
+        match self.stream.write(&b) {
             Ok(n) => println!("[net] Sent: Length: {}", n),
             Err(e) => println!("[net] Error sending message: {}", e),
         }

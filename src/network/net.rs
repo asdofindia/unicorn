@@ -3,9 +3,6 @@
 use std::net::TcpListener;
 use std::io::Error;
 use std::thread;
-use std::sync::mpsc::channel;
-use std::sync::{Arc, Mutex};
-use messages::{Msg, encode};
 
 use super::{Processor, Stream, Status};
 
@@ -72,7 +69,7 @@ impl Net {
         match self.status {
             Status::READY => {
                 println!("[net] Ready to recv on {}", &self.addr);
-                &self.stream_loop(processor);
+                self.stream_loop(processor);
             }
             _ => println!("[net] Network interface is not ready"),
         }
@@ -84,49 +81,24 @@ impl Net {
         for stream in self.listener.incoming() {
             match stream {
                 Ok(stream) => {
-                    let s = Arc::new(Mutex::new(Stream::new(stream)));
                     println!("Received stream. Sending...");
-                    self.process_stream(s, processor);
+                    thread::spawn(move || {
+                        let s = Stream::new(stream);
+                        process_stream(s, processor);
+                    });
                 }
                 Err(_) => println!("[net] Could not grab incoming stream"),
             }
         }
     }
+}
 
-    /// Process incoming TCP Streams
-    fn process_stream<'p>(&self, s: Arc<Mutex<Stream>>, processor: &'static Processor) {
-        let (msgtx, msgrx) = channel::<Msg>();
-        let sarc_th = s.clone();
-        thread::spawn(move || {
-            loop {
-                match sarc_th.lock() {
-                    Ok(mut slock) => {
-                        if let Some(st) = slock.recv() {
-                            processor.process(st, msgtx.clone());
-                        }
-                    },
-                    Err(e) => println!("[net] Cannot get a lock on stream. {}", e)
-                }
-            }
-        });
-        let sarc_loop = s.clone();
-        thread::spawn(move || {
-            let mut n = msgrx.iter();
-            loop {
-                if let Some(msg) = n.next() {
-                    match encode(&msg) {
-                        Some(st) => {
-                            match sarc_loop.lock() {
-                                Ok(mut slock) => {
-                                    slock.send(st.as_bytes());
-                                },
-                                Err(e) => println!("[net] Cannot get a lock on stream. {}", e)
-                            }
-                        },
-                        None => break
-                    }
-                }
-            }
-        });
+
+/// Process incoming TCP Streams
+fn process_stream(mut s: Stream, processor: &'static Processor) {
+    loop {
+        if let Some(st) = s.recv() {
+            processor.process(st, &mut s);
+        }
     }
 }

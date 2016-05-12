@@ -1,4 +1,5 @@
 extern crate rustc_serialize;
+extern crate bufstream;
 
 pub mod core;
 pub mod gateway;

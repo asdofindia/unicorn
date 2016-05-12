@@ -1,5 +1,5 @@
 use network::Stream;
-use messages;
+use messages::{self, Msg, encode_bytes};
 
 /// Run the gateway service
 ///
@@ -29,6 +29,8 @@ pub fn run() {
         msg: Some("Trying out stuff".to_string()),
     };
 
-    stream.send(messages::encode(&msg).unwrap().as_bytes());
-
+    stream.send(encode_bytes(&msg));
+    for _ in 0..10 {
+        stream.send(encode_bytes(&Msg::Ok))
+    }
 }

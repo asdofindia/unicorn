@@ -7,8 +7,7 @@ mod stream;
 pub use self::net::Net;
 pub use self::stream::Stream;
 
-use std::sync::mpsc::Sender;
-use messages::Msg;
+use std::io::Error;
 
 /// List of states for a network connection
 #[derive(Copy, Clone)]
@@ -23,5 +22,17 @@ pub enum Status {
 
 /// Provides an interface for creating processor types
 pub trait Processor: Send + Sync {
-    fn process(&self, String, Sender<Msg>);
+    fn process(&self, String, &mut Stream);
+}
+
+/// Convenience function to bind a new Net
+pub fn bind(addr: String) -> Result<Net, Error> {
+    let net = try!(Net::bind(addr));
+    Ok(net)
+}
+
+/// Convenience function to connect to an existing Net and return a Stream
+pub fn connect(addr: String) -> Result<Stream, Error> {
+    let stream = try!(Stream::connect(&addr, true));
+    Ok(stream)
 }
