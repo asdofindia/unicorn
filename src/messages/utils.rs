@@ -12,10 +12,18 @@ pub fn encode(msg: &Msg) -> Option<String> {
     match json::encode(&msg) {
         Ok(msg) => Some(msg.to_string()),
         Err(e) => {
-            println!("Cannot encode message: {}", e.description());
+            println!("Cannot encode message: {}", e);
             None
         }
     }
+}
+
+/// Convenience method to message structures directly to serialized bytes
+///
+/// **Warning**: This function does not guarantee notifying error
+/// states. It will return a slice of `u8` either way.
+pub fn encode_bytes<'a>(msg: &Msg) -> Vec<u8> {
+    encode(&msg).unwrap_or("".to_string()).into_bytes()
 }
 
 /// Generic decoder for all messages. Decodes JSON strings to message structures
