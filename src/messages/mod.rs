@@ -21,7 +21,6 @@
 //! let jmsg = decode(jbytes).unwrap();
 //! ```
 //!
-#![allow(unstable)]
 
 pub mod common;
 pub mod core;

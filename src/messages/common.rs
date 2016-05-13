@@ -1,6 +1,4 @@
 //! Common message structures shared by more than one components
-#![allow(unstable)]
-
 
 /// List of main component types in unicorn
 #[derive(RustcEncodable, RustcDecodable, Debug, PartialEq)]
