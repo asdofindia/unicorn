@@ -15,6 +15,7 @@ connect any number and combination of clients (humans or machines).
 [dependencies]
 rustc-serialize = "0.3"
 bufstream = "0.1"
+threadpool = "1.0"
 
 [[bin]]
 name = "unicorn"

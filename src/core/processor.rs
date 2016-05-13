@@ -2,24 +2,26 @@
 
 use messages::{Msg, decode, encode_bytes};
 use messages::common::*;
-use network::{Processor, Stream};
+use network::Processor;
 
 pub struct ProcessMsg;
 
 impl Processor for ProcessMsg {
     /// Procedure for processing incoming messages
-    fn process(&self, msg: String, stream: &mut Stream) {
+    fn process(&self, msg: String) -> Vec<u8> {
+        let buff: Vec<u8>;
         println!("[core] Processing: {:?}", msg);
         if let Some(msg) = decode(msg) {
-            match msg {
-                Msg::Heartbeat { id, count } => process_heartbeat_msg(id, count, stream),
-                Msg::Status { id, state, msg } => process_status_msg(id, state, msg, stream),
+            buff = match msg {
+                Msg::Heartbeat { id, count } => process_heartbeat_msg(id, count),
+                Msg::Status { id, state, msg } => process_status_msg(id, state, msg),
                 Msg::Ok => process_ok(),
-                _ => process_error("Unknown message received".to_string(), stream)
+                _ => process_error("Unknown message received".to_string()),
             }
         } else {
-            process_error("Unable to decode message".to_string(), stream);
+            buff = process_error("Unable to decode message".to_string());
         }
+        buff
     }
 }
 
@@ -28,25 +30,27 @@ unsafe impl Send for ProcessMsg {}
 unsafe impl Sync for ProcessMsg {}
 
 /// Processes error states
-fn process_error(emsg: String, stream: &mut Stream) {
-    stream.send(encode_bytes(&Msg::Error(emsg)));
+fn process_error(emsg: String) -> Vec<u8> {
+    println!("[core] Error processing message: {}", &emsg);
+    encode_bytes(&Msg::Error(emsg))
 }
 
 /// Processes Heartbeat messages
-fn process_heartbeat_msg(id: ID, count: i32, stream: &mut Stream) {
+fn process_heartbeat_msg(id: ID, count: i32) -> Vec<u8> {
     println!("[core] Heartbeat: #{} from {}", count, id.uuid);
     // TODO: Need better error handling here
-    stream.send(encode_bytes(&Msg::Ok));
+    encode_bytes(&Msg::Ok)
 }
 
 /// Processes Status messages
-fn process_status_msg(id: ID, state: State, m: Option<String>, stream: &mut Stream) {
+fn process_status_msg(id: ID, state: State, m: Option<String>) -> Vec<u8> {
     println!("[core] Status: {:?} from {}. Message: {:?}", state, id.uuid, m);
     // TODO: Need better error handling here
-    stream.send(encode_bytes(&Msg::Ok));
+    encode_bytes(&Msg::Ok)
 }
 
 /// Process Ok messages
-fn process_ok() {
+fn process_ok() -> Vec<u8> {
     println!("[core] Got OK");
+    vec![0xA]
 }

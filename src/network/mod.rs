@@ -22,7 +22,7 @@ pub enum Status {
 
 /// Provides an interface for creating processor types
 pub trait Processor: Send + Sync {
-    fn process(&self, String, &mut Stream);
+    fn process(&self, String) -> Vec<u8>;
 }
 
 /// Convenience function to bind a new Net

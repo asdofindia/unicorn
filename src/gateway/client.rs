@@ -20,7 +20,7 @@ pub fn run() {
         }
     };
 
-    let msg: messages::Msg = messages::Msg::Status {
+    let msg: Msg = Msg::Status {
         id: messages::common::ID {
             uuid: "_gateway".to_string(),
             component: messages::common::Components::Gateway,
@@ -30,7 +30,4 @@ pub fn run() {
     };
 
     stream.send(encode_bytes(&msg));
-    for _ in 0..10 {
-        stream.send(encode_bytes(&Msg::Ok))
-    }
 }

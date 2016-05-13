@@ -2,7 +2,7 @@
 
 use std::net::TcpListener;
 use std::io::Error;
-use std::thread;
+use threadpool::ThreadPool;
 
 use super::{Processor, Stream, Status};
 
@@ -10,11 +10,9 @@ use super::{Processor, Stream, Status};
 /// the network interface.
 ///
 /// `Net` provides a higher-level abstraction of TCP listener
-/// sockets. It does not impose any pattern, but it can be used to
-/// implement basic request-reply and pub-sub messaging architectures.
-///
-/// `Net` wraps around `std::net::TcpListener` and uses channels to
-/// communicate with incoming `TcpStream`s.
+/// sockets. It multiplexes incoming connections into parallel threads
+/// and runs a given `Processor` against all messages that the
+/// connection receives.
 ///
 /// ## Using `Net`
 ///
@@ -28,7 +26,8 @@ use super::{Processor, Stream, Status};
 pub struct Net {
     addr: String,
     listener: TcpListener,
-    status: Status
+    status: Status,
+    num_workers: usize
 }
 
 impl Net {
@@ -37,7 +36,8 @@ impl Net {
         Net {
             addr: a,
             listener: l,
-            status: s
+            status: s,
+            num_workers: 4
         }
     }
 
@@ -49,6 +49,11 @@ impl Net {
     /// Returns the status
     pub fn status(&self) -> Status {
         self.status.clone()
+    }
+
+    /// Set number of workers for processing incoming streams in parallel
+    pub fn num_workers(&mut self, i: usize) {
+        self.num_workers = i;
     }
 
     /// Start a listener on an existing network interface
@@ -78,12 +83,12 @@ impl Net {
 
     /// Loop over incoming listener streams and set processor
     fn stream_loop(&self, processor: &'static Processor) {
+        let pool = ThreadPool::new_with_name("netstream".to_string(), self.num_workers);
         for stream in self.listener.incoming() {
             match stream {
                 Ok(stream) => {
-                    println!("Received stream. Sending...");
-                    thread::spawn(move || {
-                        let s = Stream::new(stream);
+                    let s = Stream::new(stream);
+                    pool.execute(move || {
                         process_stream(s, processor);
                     });
                 }
@@ -98,7 +103,10 @@ impl Net {
 fn process_stream(mut s: Stream, processor: &'static Processor) {
     loop {
         if let Some(st) = s.recv() {
-            processor.process(st, &mut s);
+            let buff: Vec<u8> = processor.process(st);
+            s.send(buff);
+        } else {
+            break;
         }
     }
 }
