@@ -1,6 +1,7 @@
 extern crate rustc_serialize;
 extern crate bufstream;
 extern crate threadpool;
+extern crate nanomsg;
 
 pub mod core;
 pub mod gateway;

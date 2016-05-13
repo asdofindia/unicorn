@@ -3,6 +3,7 @@ name = "unicorn"
 version = "0.1.0"
 dependencies = [
  "bufstream 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nanomsg 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "rustc-serialize 0.3.19 (registry+https://github.com/rust-lang/crates.io-index)",
  "threadpool 1.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -11,6 +12,28 @@ dependencies = [
 name = "bufstream"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "libc"
+version = "0.2.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "nanomsg"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nanomsg-sys 0.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "nanomsg-sys"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "libc 0.2.11 (registry+https://github.com/rust-lang/crates.io-index)",
+]
 
 [[package]]
 name = "rustc-serialize"
