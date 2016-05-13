@@ -3,3 +3,5 @@ This document states the software used to build, deploy and distribute unicorn.
 - "The Rust Programming Language" (rustc)  under the Apache License v2.0 :: https://rust-lang.org
 - "Cargo: The Rust package manager" under the Apache License v2.0 :: https://crates.io
 - "rustc-serialize" under the Apache License v2.0 :: https://github.com/rust-lang-nursery/rustc-serialize
+- "bufstream" under the Apache License v2.0 :: https://github.com/alexcrichton/bufstream
+- "threadpool" under the Apache License v2.0 :: https://github.com/frewsxcv/rust-threadpool
