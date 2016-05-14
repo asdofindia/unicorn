@@ -42,7 +42,7 @@ pub fn decode(encodedstr: String) -> Option<Msg> {
 #[cfg(test)]
 mod tests {
 
-    use super::{encode, decode};
+    use super::{encode, encode_bytes, decode};
     use super::super::{Msg, common};
 
     fn dummy() -> Msg {
@@ -71,5 +71,23 @@ mod tests {
         let tjde = decode(tjen).unwrap();
 
         assert_eq!(tj, tjde);
+    }
+
+    /// Test message::encode_bytes
+    #[test]
+    fn test_message_encode_bytes() {
+        let tj = dummy();
+        {
+            let tjen = encode_bytes(&tj);
+            let tjde = decode(String::from_utf8(tjen).unwrap()).unwrap();
+
+            assert_eq!(tj, tjde);
+        }
+        {
+            let tjen = encode(&tj);
+            let tjen_bytes = encode_bytes(&tj);
+
+            assert_eq!(tjen.unwrap().into_bytes(), tjen_bytes);
+        }
     }
 }
