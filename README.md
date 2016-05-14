@@ -2,7 +2,30 @@
 
 [![Build Status](https://travis-ci.org/muktakosh/unicorn.svg?branch=master)](https://travis-ci.org/muktakosh/unicorn) [![API Docs](https://img.shields.io/badge/docs-API-blue.svg)](https://muktakosh.github.io/unicorn)
 
-"unicorn" is our sweet little name for **Unified Communications Over Real-time Networks**.
+**unicorn is a decentralized, distributed, federated, deployable,
+secure, real-time, eventually persistent, data-agnostic communications platform that can connect humans
+and/or machines to each other. Like IoT, WoT or WhatNotoT.**
+
+## Intro
+
+We aim to build unicorn in such a way that it can inter-operate with
+other communication platforms and services. We aim to let unicorn
+instances talk to each other and build a worldwide communication
+network in a decentralized way by connecting public deployments of
+unicorn to each other in a federated way, much like the internet has
+grown up. Think of unicorn as a better internet for real-time, secure
+and multi-data-type communications, built on top of the internet
+itself.
+
+The project is still in its early days and contributions are very much
+welcome! Check the [Contribute](#contribute) and
+[Community](#community) sections below if you are interested.
+
+---
+
+## About unicorn
+
+"unicorn" is our sweet little acronym for **Unified Communications Over Real-time Networks**.
 
 unicorn's purpose is to dissolve fragmentation of the internet; by
 making it possible to bridge together different types of networks. It
