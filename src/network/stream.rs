@@ -78,4 +78,10 @@ impl Stream {
             Err(e) => println!("[net] Error sending message: {}", e),
         }
     }
+
+    /// Call flush on the buffer to send out currently stored messages
+    /// immediately
+    pub fn flush(&mut self) -> Result<(), Error> {
+        self.stream.flush()
+    }
 }
