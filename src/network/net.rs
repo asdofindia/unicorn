@@ -110,11 +110,16 @@ fn process_stream(mut s: Stream, processor: &'static Processor) {
     loop {
         if let Some(st) = s.recv() {
             let buff: Vec<u8> = processor.process(st);
+            if buff.len() == 0 {
+                break;
+            }
             s.send(buff);
+            let _ = s.flush();
         } else {
             break;
         }
     }
+    drop(s);
 }
 
 #[cfg(test)]
@@ -155,7 +160,7 @@ mod test {
     #[test]
     #[should_panic(expected = "Address already in use")]
     fn test_net_bind_panic() {
-        let n = Net::bind("127.0.0.1:60002".to_string()).unwrap();
-        let n1 = Net::bind("127.0.0.1:60002".to_string()).unwrap();
+        let n = Net::bind("127.0.0.1:60003".to_string()).unwrap();
+        let n1 = Net::bind("127.0.0.1:60003".to_string()).unwrap();
     }
 }
