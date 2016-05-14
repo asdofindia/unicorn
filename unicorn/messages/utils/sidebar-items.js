@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["decode","Generic decoder for all messages. Decodes JSON strings to message structures"],["encode","Generic encoder for all messages. Encodes message structures to JSON strings"],["encode_bytes","Convenience method to message structures directly to serialized bytes"]]});

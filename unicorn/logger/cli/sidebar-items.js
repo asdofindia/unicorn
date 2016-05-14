@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["CLILogger","Logs to console"]]});

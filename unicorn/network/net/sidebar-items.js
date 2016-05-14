@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Net","Network structure that holds network topology information. Aka, the network interface."]]});
