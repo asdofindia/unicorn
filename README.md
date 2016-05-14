@@ -1,6 +1,6 @@
 # unicorn
 
-[![Build Status](https://travis-ci.org/muktakosh/unicorn.svg?branch=master)](https://travis-ci.org/muktakosh/unicorn)
+[![Build Status](https://travis-ci.org/muktakosh/unicorn.svg?branch=master)](https://travis-ci.org/muktakosh/unicorn) [![API Docs](https://img.shields.io/badge/docs-API-blue.svg)](https://muktakosh.github.io/unicorn)
 
 "unicorn" is our sweet little name for **Unified Communications Over Real-time Networks**.
 
