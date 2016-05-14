@@ -116,3 +116,46 @@ fn process_stream(mut s: Stream, processor: &'static Processor) {
         }
     }
 }
+
+#[cfg(test)]
+mod test {
+    #![allow(unused_variables)]
+
+    use super::Net;
+    use super::super::Status;
+
+    #[test]
+    fn test_new_net() {
+        let n: Net = Net::bind("127.0.0.1:60000".to_string()).unwrap();
+        assert!(match n.addr().as_ref() {
+            "127.0.0.1:60000" => true,
+            _ => false
+        });
+        assert!(match n.status() {
+            Status::READY => true,
+            _ => false
+        });
+        assert_eq!(n.num_workers, 4);
+    }
+
+    #[test]
+    fn test_num_workers() {
+        let mut n: Net = Net::bind("127.0.0.1:60001".to_string()).unwrap();
+        n.num_workers(20);
+        assert_eq!(n.num_workers, 20);
+    }
+
+    #[test]
+    #[should_panic(expected = "Number of workers cannot be less than 1")]
+    fn test_num_workers_panic() {
+        let mut n: Net = Net::bind("127.0.0.1:60002".to_string()).unwrap();
+        n.num_workers(0);
+    }
+
+    #[test]
+    #[should_panic(expected = "Address already in use")]
+    fn test_net_bind_panic() {
+        let n = Net::bind("127.0.0.1:60002".to_string()).unwrap();
+        let n1 = Net::bind("127.0.0.1:60002".to_string()).unwrap();
+    }
+}
