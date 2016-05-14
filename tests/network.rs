@@ -112,31 +112,30 @@ fn test_stream_drop_on_empty_processor_response() {
 fn test_stream_multiple_message_multiple_connection() {
     let net = spawn(move || {
         let mut n = Net::bind("127.0.0.1:61003".to_string()).unwrap();
-        n.num_workers(2);
+        n.num_workers(4);
         static TESTP: P = P {};
         n.recv(&TESTP);
     });
 
     let mut stlist: HashMap<i32, Stream> = HashMap::new();
 
-    for i in 1..10 {
+    for i in 1..100 {
         &stlist.insert(i, Stream::connect(&"127.0.0.1:61003".to_string(), true).unwrap());
     }
 
-    for i in 0..10 {
+    for i in 0..100 {
         if let Some(mut stream) = stlist.remove(&i) {
-            for sr in 0..5 {
+            for sr in 0..100 {
                 let s = format!("Test loop {} - {}", &i, &sr);
                 stream.send(s.clone().into_bytes());
             }
             let _ = stream.flush();
-            for sr in 0..5 {
+            for sr in 0..100 {
                 assert_eq!(stream.recv(), Some(format!("Test loop {} - {}", &i, &sr)));
             }
             stream.send("KILL".to_string().into_bytes());
         }
     }
-
 
     drop(net);
 }
