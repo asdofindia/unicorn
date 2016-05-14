@@ -6,7 +6,7 @@ use super::processor::ProcessMsg;
 ///
 /// This function is called when you run `$ unicorn core`.
 pub fn run() {
-    println!("Running core...");
+    debug!("Running core...");
 
     // Address of the listener socket
     // Max port: 65535 (u16 MAX)
@@ -14,10 +14,10 @@ pub fn run() {
 
     match Net::bind(addr) {
         Ok(net) => {
-            println!("[core] Listening on {}", net.addr());
+            debug!("[core] Listening on {}", net.addr());
             static P: ProcessMsg = ProcessMsg{};
             net.recv(&P);
         }
-        Err(_) => println!("[core] Error binding listener"),
+        Err(_) => debug!("[core] Error binding listener"),
     }
 }

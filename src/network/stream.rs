@@ -23,7 +23,7 @@ impl Stream {
         match TcpStream::connect(&addr[..]) {
             Ok(s) => Ok(Stream::new(s)),
             Err(e) => {
-                println!("[net] Unable to connect to link");
+                debug!("[net] Unable to connect to link");
                 Err(e)
             }
         }
@@ -32,7 +32,7 @@ impl Stream {
     /// Keep trying for connection in a loop
     fn connect_loop(addr: &String) -> Result<Stream, Error> {
         loop {
-            println!("Retrying...");
+            debug!("Retrying...");
             if let Ok(s) = Stream::connect_once(addr) {
                 return Ok(s)
             }
@@ -64,7 +64,7 @@ impl Stream {
                 None
             }
             Err(e) => {
-                println!("[net] Unable to process incoming stream: {}", e);
+                debug!("[net] Unable to process incoming stream: {}", e);
                 None
             }
         }
@@ -74,8 +74,8 @@ impl Stream {
     pub fn send(&mut self, mut b: Vec<u8>) {
         b.push(0xA);
         match self.stream.write(&b) {
-            Ok(n) => println!("[net] Sent: Length: {}", n),
-            Err(e) => println!("[net] Error sending message: {}", e),
+            Ok(n) => debug!("[net] Sent: Length: {}", n),
+            Err(e) => debug!("[net] Error sending message: {}", e),
         }
     }
 

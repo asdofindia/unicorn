@@ -1,8 +1,12 @@
+#[macro_use]
+extern crate log;
+
 extern crate rustc_serialize;
 extern crate bufstream;
 extern crate threadpool;
 extern crate nanomsg;
 
+pub mod logger;
 pub mod core;
 pub mod gateway;
 pub mod messages;

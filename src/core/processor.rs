@@ -10,7 +10,7 @@ impl Processor for ProcessMsg {
     /// Procedure for processing incoming messages
     fn process(&self, msg: String) -> Vec<u8> {
         let buff: Vec<u8>;
-        println!("[core] Processing: {:?}", msg);
+        debug!("[core] Processing: {:?}", msg);
         if let Some(msg) = decode(msg) {
             buff = match msg {
                 Msg::Heartbeat { id, count } => process_heartbeat_msg(id, count),
@@ -31,26 +31,26 @@ unsafe impl Sync for ProcessMsg {}
 
 /// Processes error states
 fn process_error(emsg: String) -> Vec<u8> {
-    println!("[core] Error processing message: {}", &emsg);
+    debug!("[core] Error processing message: {}", &emsg);
     encode_bytes(&Msg::Error(emsg))
 }
 
 /// Processes Heartbeat messages
 fn process_heartbeat_msg(id: ID, count: i32) -> Vec<u8> {
-    println!("[core] Heartbeat: #{} from {}", count, id.uuid);
+    debug!("[core] Heartbeat: #{} from {}", count, id.uuid);
     // TODO: Need better error handling here
     encode_bytes(&Msg::Ok)
 }
 
 /// Processes Status messages
 fn process_status_msg(id: ID, state: State, m: Option<String>) -> Vec<u8> {
-    println!("[core] Status: {:?} from {}. Message: {:?}", state, id.uuid, m);
+    debug!("[core] Status: {:?} from {}. Message: {:?}", state, id.uuid, m);
     // TODO: Need better error handling here
     encode_bytes(&Msg::Ok)
 }
 
 /// Process Ok messages
 fn process_ok() -> Vec<u8> {
-    println!("[core] Got OK");
+    debug!("[core] Got OK");
     vec![0xA]
 }

@@ -5,7 +5,7 @@ use messages::{self, Msg, encode_bytes};
 ///
 /// This function is called when you run `$ unicorn gateway`.
 pub fn run() {
-    println!("Running gateway...");
+    debug!("Running gateway...");
 
     // Address of the REP socket
     let core_addr = "127.0.0.1:60000".to_string();
@@ -15,7 +15,7 @@ pub fn run() {
     match Stream::connect(&core_addr, true) {
         Ok(s) => stream = s,
         Err(e) => {
-            println!("[gateway] Unable to connect to core at {}. Reason: {}", &core_addr, e);
+            debug!("[gateway] Unable to connect to core at {}. Reason: {}", &core_addr, e);
             return
         }
     };

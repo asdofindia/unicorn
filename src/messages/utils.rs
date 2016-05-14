@@ -12,7 +12,7 @@ pub fn encode(msg: &Msg) -> Option<String> {
     match json::encode(&msg) {
         Ok(msg) => Some(msg.to_string()),
         Err(e) => {
-            println!("Cannot encode message: {}", e);
+            debug!("Cannot encode message: {}", e);
             None
         }
     }
@@ -31,7 +31,7 @@ pub fn decode(encodedstr: String) -> Option<Msg> {
     match json::decode(&encodedstr[..]) {
         Ok(enc) => Some(enc),
         Err(e) => {
-            println!("Cannot decode message: {}", e.description());
+            debug!("Cannot decode message: {}", e.description());
             None
         }
     }
