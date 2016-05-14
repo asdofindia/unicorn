@@ -52,7 +52,13 @@ impl Net {
     }
 
     /// Set number of workers for processing incoming streams in parallel
+    ///
+    /// **Note**: This method will cause a `panic!()` if number of
+    /// workers specified is less than 1.
     pub fn num_workers(&mut self, i: usize) {
+        if i < 1 {
+            panic!("Number of workers cannot be less than 1");
+        }
         self.num_workers = i;
     }
 
