@@ -10,11 +10,8 @@ struct P {}
 
 impl Processor for P {
     fn process(&self, s: String) -> Vec<u8> {
-        println!("Got incoming string: {}", &s);
         if s == "KILL" {
-            println!("Exiting. Killing Net.");
             return vec![]
-
         }
         Vec::from(&s[..])
     }
@@ -33,13 +30,11 @@ fn test_net_bind_recv_loop() {
     });
 
     let mut st = Stream::connect(&"127.0.0.1:61000".to_string(), true).unwrap();
-    println!("Sending stream");
     st.send("Test loop".to_string().into_bytes());
     let _ = st.flush();
 
     loop {
         if let Some(s) = st.recv() {
-            println!("Received");
             assert_eq!(s, "Test loop".to_string());
             break;
         }
@@ -58,7 +53,6 @@ fn test_stream_multiple_message_one_connection() {
     });
 
     let mut st = Stream::connect(&"127.0.0.1:61001".to_string(), true).unwrap();
-    println!("Sending stream");
     st.send("Test loop 1".to_string().into_bytes());
     st.send("Test loop 2".to_string().into_bytes());
     let _ = st.flush();
@@ -69,7 +63,6 @@ fn test_stream_multiple_message_one_connection() {
             break;
         }
         if let Some(s) = st.recv() {
-            println!("Received back {}", &s);
             assert!(match s.as_ref() {
                 "Test loop 1" => true,
                 "Test loop 2" => true,
@@ -96,7 +89,6 @@ fn test_stream_drop_on_empty_processor_response() {
     st.send("KILL".to_string().into_bytes());
     let _ = st.flush();
 
-    println!("Test loop after KILL");
     st.send("Test loop after KILL".to_string().into_bytes());
     let _ = st.flush();
 
