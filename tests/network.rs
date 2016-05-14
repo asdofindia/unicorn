@@ -25,7 +25,8 @@ unsafe impl Sync for P {}
 #[test]
 fn test_net_bind_recv_loop() {
     let net = spawn(move || {
-        let n = Net::bind("127.0.0.1:61000".to_string()).unwrap();
+        let mut n = Net::bind("127.0.0.1:61000".to_string()).unwrap();
+        n.num_workers(1);
         static TESTP: P = P {};
         n.recv(&TESTP);
     });
@@ -49,7 +50,8 @@ fn test_net_bind_recv_loop() {
 #[test]
 fn test_stream_multiple_message_one_connection() {
     let net = spawn(move || {
-        let n = Net::bind("127.0.0.1:61001".to_string()).unwrap();
+        let mut n = Net::bind("127.0.0.1:61001".to_string()).unwrap();
+        n.num_workers(1);
         static TESTP: P = P {};
         n.recv(&TESTP);
     });
@@ -83,7 +85,8 @@ fn test_stream_multiple_message_one_connection() {
 #[test]
 fn test_stream_drop_on_empty_processor_response() {
     let net = spawn(move || {
-        let n = Net::bind("127.0.0.1:61002".to_string()).unwrap();
+        let mut n = Net::bind("127.0.0.1:61002".to_string()).unwrap();
+        n.num_workers(1);
         static TESTP: P = P {};
         n.recv(&TESTP);
     });
