@@ -69,7 +69,7 @@ impl Net {
                 Ok(Net::new(addr, l, Status::READY))
             }
             Err(e) => {
-                debug!("[net] Unable to bind to {}. Reason: {}", &addr, e);
+                error!("[net] Unable to bind to {}. Reason: {}", &addr, e);
                 Err(e)
             }
         }
@@ -79,10 +79,10 @@ impl Net {
     pub fn recv(&self, processor: &'static Processor) {
         match self.status {
             Status::READY => {
-                debug!("[net] Ready to recv on {}", &self.addr);
+                info!("[net] Ready to recv on {}", &self.addr);
                 self.stream_loop(processor);
             }
-            _ => debug!("[net] Network interface is not ready"),
+            _ => info!("[net] Network interface is not ready"),
         }
 
     }
