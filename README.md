@@ -12,10 +12,10 @@ We aim to build unicorn in such a way that it can inter-operate with
 other communication platforms and services. We aim to let unicorn
 instances talk to each other and build a worldwide communication
 network in a decentralized way by connecting public deployments of
-unicorn to each other in a federated way, much like the internet has
-grown up. Think of unicorn as a better internet for real-time, secure
-and multi-data-type communications, built on top of the internet
-itself.
+unicorn to each other in a federated manner, much like the internet
+has grown up. Think of unicorn as a better internet for real-time,
+secure and multi-data-type communications, built on top of the
+internet itself.
 
 The project is still in its early days and contributions are very much
 welcome! Check the [Contribute](#contribute) and
