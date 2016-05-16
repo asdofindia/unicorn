@@ -3,7 +3,7 @@ extern crate unicorn;
 use unicorn::network::*;
 use std::thread::spawn;
 use std::io::prelude::*;
-use std::collections::HashMap;
+use std::sync::mpsc::channel;
 
 /// Processor for test. Implements an echo.
 struct P {}
@@ -101,32 +101,70 @@ fn test_stream_drop_on_empty_processor_response() {
 
 
 #[test]
-fn test_stream_multiple_message_multiple_connection() {
+fn test_stream_multiple_message_multiple_connection_async() {
     let net = spawn(move || {
         let mut n = Net::bind("127.0.0.1:61003".to_string()).unwrap();
-        n.num_workers(4);
+        n.num_workers(10);
         static TESTP: P = P {};
         n.recv(&TESTP);
     });
 
-    let mut stlist: HashMap<i32, Stream> = HashMap::new();
+    let (tx, rx) = channel::<(i32, Stream)>();
 
-    for i in 1..100 {
-        &stlist.insert(i, Stream::connect(&"127.0.0.1:61003".to_string(), true).unwrap());
-    }
+    let connector = spawn(move || {
+        for i in 0..10000 {
+            tx.send((i, Stream::connect(&"127.0.0.1:61003".to_string(), true).unwrap())).unwrap();
+        }
+        drop(tx);
+    });
 
-    for i in 0..100 {
-        if let Some(mut stream) = stlist.remove(&i) {
-            for sr in 0..100 {
+    let mut c: i64 = 0;
+    let mut x = rx.iter();
+    loop {
+        if let Some((i, mut stream)) = x.next() {
+            for sr in 0..10 {
                 let s = format!("Test loop {} - {}", &i, &sr);
                 stream.send(s.clone().into_bytes());
             }
             let _ = stream.flush();
-            for sr in 0..100 {
+            for sr in 0..10 {
                 assert_eq!(stream.recv(), Some(format!("Test loop {} - {}", &i, &sr)));
             }
             stream.send("KILL".to_string().into_bytes());
+            c += 1;
+        } else {
+            if c < 9999 {
+                panic!(format!("Premature stop of test at {}", &c));
+            }
+            break;
         }
+    }
+
+    connector.join().unwrap();
+
+    drop(net);
+}
+
+#[test]
+fn test_stream_multiple_message_multiple_connection_sync() {
+    let net = spawn(move || {
+        let mut n = Net::bind("127.0.0.1:61003".to_string()).unwrap();
+        n.num_workers(2);
+        static TESTP: P = P {};
+        n.recv(&TESTP);
+    });
+
+    for i in 0..10000 {
+        let mut stream = Stream::connect(&"127.0.0.1:61003".to_string(), true).unwrap();
+        for sr in 0..10 {
+            let s = format!("Test loop {} - {}", &i, &sr);
+            stream.send(s.clone().into_bytes());
+        }
+        let _ = stream.flush();
+        for sr in 0..10 {
+            assert_eq!(stream.recv(), Some(format!("Test loop {} - {}", &i, &sr)));
+        }
+        stream.send("KILL".to_string().into_bytes());
     }
 
     drop(net);
