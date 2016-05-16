@@ -100,20 +100,20 @@ fn test_stream_drop_on_empty_processor_response() {
 }
 
 
-#[test]
-fn test_stream_multiple_message_multiple_connection_async() {
+fn run_multiple_message_multiple_connection_async(addr: String, num_workers: usize, num_conn: i64) {
+    let addr_spawn = addr.clone();
     let net = spawn(move || {
-        let mut n = Net::bind("127.0.0.1:61003".to_string()).unwrap();
-        n.num_workers(10);
+        let mut n = Net::bind(addr_spawn).unwrap();
+        n.num_workers(num_workers);
         static TESTP: P = P {};
         n.recv(&TESTP);
     });
 
-    let (tx, rx) = channel::<(i32, Stream)>();
-
+    let (tx, rx) = channel::<(i64, Stream)>();
+    let conn_spawn = num_conn.clone();
     let connector = spawn(move || {
-        for i in 0..10000 {
-            tx.send((i, Stream::connect(&"127.0.0.1:61003".to_string(), true).unwrap())).unwrap();
+        for i in 0..conn_spawn {
+            tx.send((i, Stream::connect(&addr, true).unwrap())).unwrap();
         }
         drop(tx);
     });
@@ -133,7 +133,7 @@ fn test_stream_multiple_message_multiple_connection_async() {
             stream.send("KILL".to_string().into_bytes());
             c += 1;
         } else {
-            if c < 9999 {
+            if c < num_conn - 1 {
                 panic!(format!("Premature stop of test at {}", &c));
             }
             break;
@@ -145,17 +145,29 @@ fn test_stream_multiple_message_multiple_connection_async() {
     drop(net);
 }
 
+
 #[test]
-fn test_stream_multiple_message_multiple_connection_sync() {
+fn test_stream_multiple_message_multiple_connection_short_async() {
+    run_multiple_message_multiple_connection_async("127.0.0.1:61004".to_string(), 4, 500);
+}
+
+#[test]
+#[ignore]
+fn test_stream_multiple_message_multiple_connection_long_async() {
+    run_multiple_message_multiple_connection_async("127.0.0.1:61005".to_string(), 10, 10000);
+}
+
+fn run_multiple_message_multiple_connection_sync(addr: String, num_workers: usize, num_conn: i64) {
+    let addr_spawn = addr.clone();
     let net = spawn(move || {
-        let mut n = Net::bind("127.0.0.1:61003".to_string()).unwrap();
-        n.num_workers(2);
+        let mut n = Net::bind(addr_spawn).unwrap();
+        n.num_workers(num_workers);
         static TESTP: P = P {};
         n.recv(&TESTP);
     });
 
-    for i in 0..10000 {
-        let mut stream = Stream::connect(&"127.0.0.1:61003".to_string(), true).unwrap();
+    for i in 0..num_conn {
+        let mut stream = Stream::connect(&addr, true).unwrap();
         for sr in 0..10 {
             let s = format!("Test loop {} - {}", &i, &sr);
             stream.send(s.clone().into_bytes());
@@ -168,4 +180,15 @@ fn test_stream_multiple_message_multiple_connection_sync() {
     }
 
     drop(net);
+}
+
+#[test]
+fn test_stream_multiple_message_multiple_connection_short_sync() {
+    run_multiple_message_multiple_connection_sync("127.0.0.1:61006".to_string(), 4, 500);
+}
+
+#[test]
+#[ignore]
+fn test_stream_multiple_message_multiple_connection_long_sync() {
+    run_multiple_message_multiple_connection_sync("127.0.0.1:61007".to_string(), 10, 10000);
 }
