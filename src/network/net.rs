@@ -3,6 +3,7 @@
 use std::net::TcpListener;
 use std::io::Error;
 use threadpool::ThreadPool;
+use num_cpus;
 
 use super::{Processor, Stream, Status};
 
@@ -37,7 +38,7 @@ impl Net {
             addr: a,
             listener: l,
             status: s,
-            num_workers: 4
+            num_workers: num_cpus::get()
         }
     }
 
@@ -126,6 +127,8 @@ fn process_stream(mut s: Stream, processor: &'static Processor) {
 mod test {
     #![allow(unused_variables)]
 
+    use num_cpus;
+
     use super::Net;
     use super::super::Status;
 
@@ -140,7 +143,7 @@ mod test {
             Status::READY => true,
             _ => false
         });
-        assert_eq!(n.num_workers, 4);
+        assert_eq!(n.num_workers, num_cpus::get());
     }
 
     #[test]
