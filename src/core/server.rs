@@ -1,13 +1,13 @@
-use rpc::{RPC, RPCType};
+use rpc::{RPC, RPCType, Protocol};
 use super::processor::process;
 
 /// Run the core service
 ///
 /// This function is called when you run `$ unicorn core`.
 pub fn run() {
-    debug!("Running core...");
+    debug!("Starting core...");
 
-    let mut crpc = RPC::new(RPCType::Server("ipc:///tmp/muktakosh-unicorn-core.ipc"));
+    let mut crpc = RPC::new(Protocol::Rep, RPCType::Bind, "ipc:///tmp/muktakosh-unicorn-core.ipc");
 
     let mut buff = String::new();
 
