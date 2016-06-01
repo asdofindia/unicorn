@@ -27,4 +27,10 @@ nightly-build:
 test:
 	cargo test
 
-.PHONY: clean deps ldconfig deps-linux build build-release clean-build test
+test-ignored:
+	cargo test -- --ignored
+
+doc:
+	cargo doc --no-deps
+
+.PHONY: clean deps ldconfig deps-linux build build-release clean-build test test-ignored doc

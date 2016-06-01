@@ -11,14 +11,14 @@ matrix:
     - rust: beta
 
 install:
-  - make linux
+  - make deps-linux
 before_script:
   - pip install 'travis-cargo<0.2' --user && export PATH=$HOME/.local/bin:$PATH
 script:
-  - cargo build --verbose
-  - cargo test --verbose
-  - cargo test -- --ignored
-  - cargo doc --no-deps
+  - make clean
+  - make build
+  - make test
+  - make doc
 after_success:
   - travis-cargo --only stable doc-upload
 
