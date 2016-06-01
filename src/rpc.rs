@@ -1,4 +1,4 @@
-//! Performs RPC-like data exchange over `nanomsg::Protocol::Rep` sockets.
+//! Internal communication distribution abstraction for `unicorn`.
 
 use nanomsg::{Protocol, Socket, Endpoint, Result};
 use messages::{Msg, encode_bytes, decode};
@@ -9,6 +9,7 @@ pub enum RPCType<'r> {
     Server(&'r str),
 }
 
+/// Performs RPC-like data exchange over `nanomsg::Protocol::Rep` sockets.
 pub struct RPC {
     socket: Socket,
     endpoint: Endpoint,
