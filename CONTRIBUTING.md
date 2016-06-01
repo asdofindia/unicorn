@@ -8,21 +8,48 @@ Please refrain from contributing patches that conflict with the LICENSE or that 
 
 ## Build Instructions
 
-- Download and install [Rust](https://www.rust-lang.org/) `stable` (v1.8.0+) with `cargo`.
+### Pre-requisites
 
-- Clone the repo
+- Install [Rust](https://www.rust-lang.org/) `stable` (v1.9.0+) with `cargo`. We recommend using [`rustup`](https://rustup.rs).
+- Install Make.
+- Clone the repo.
 
-- At the root of the repo, run:
+#### GNU/Linux
+
+- Set the `LD_LIBRARY_PATH` environment variable:
+
+    ```sh
+    export LD_LIBRARY_PATH=/usr/local/lib
+    ```
+
+- Set-up dependencies:
 
     ```
-    $ cargo build
+    $ make deps-linux
     ```
+
+#### OSX
 
 - On OSX, add `LIBRARY_PATH` environment variable:
 
     ```sh
     export LIBRARY_PATH="/usr/local/lib"
     ```
+
+- Set-up dependencies:
+
+    ```
+    $ make deps
+    ```
+
+### Trigger build
+
+
+To build the project in `debug` mode, run:
+
+```
+$ make build
+```
 
 This will create the compiled binary at `./target/debug/unicorn`.
 
@@ -31,13 +58,25 @@ This will create the compiled binary at `./target/debug/unicorn`.
 If you want a build with all optimizations in place, run this at the root of the repo:
 
 ```
-$ cargo build --release
+$ make build-release
+```
+
+This will create the compiled binary at `./target/release/unicorn`.
+
+### Build against nightly Rust
+
+If you want to build against nightly Rust, install `rustup` with `nightly` toolchain and run:
+
+```
+$ make nightly-build
 ```
 
 This will create the compiled binary at `./target/release/unicorn`.
 
 ## Tests
 
+To execute tests, run:
+
 ```
-$ cargo test
+$ make test
 ```
