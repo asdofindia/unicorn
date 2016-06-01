@@ -10,7 +10,7 @@ Please refrain from contributing patches that conflict with the LICENSE or that 
 
 ### Pre-requisites
 
-- Install [Rust](https://www.rust-lang.org/) `stable` (v1.9.0+) with `cargo`. We recommend using [`rustup`](https://rustup.rs).
+- Install [Rust](https://www.rust-lang.org/) `stable` (v1.9.0+) with `cargo`. We recommend using [`rustup`](https://www.rustup.rs/).
 - Install Make.
 - Clone the repo.
 
