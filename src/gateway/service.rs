@@ -1,5 +1,5 @@
-use network::Stream;
-use messages::{self, Msg, encode_bytes};
+use rpc::{RPC, RPCType};
+use messages::Msg;
 
 /// Run the gateway service
 ///
@@ -7,27 +7,10 @@ use messages::{self, Msg, encode_bytes};
 pub fn run() {
     debug!("Running gateway...");
 
-    // Address of the REP socket
-    let core_addr = "127.0.0.1:60000".to_string();
+    let mut core_rpc = RPC::new(RPCType::Client("ipc:///tmp/muktakosh-unicorn-core.ipc"));
 
-    let mut stream: Stream;
+    let reply = core_rpc.execute(Msg::Ok).unwrap();
 
-    match Stream::connect(&core_addr, true) {
-        Ok(s) => stream = s,
-        Err(e) => {
-            debug!("[gateway] Unable to connect to core at {}. Reason: {}", &core_addr, e);
-            return
-        }
-    };
+    println!("Received from core: \n\t{:?}\n", reply);
 
-    let msg: Msg = Msg::Status {
-        id: messages::common::ID {
-            uuid: "_gateway".to_string(),
-            component: messages::common::Components::Gateway,
-        },
-        state: messages::common::State::READY,
-        msg: Some("Trying out stuff".to_string()),
-    };
-
-    stream.send(encode_bytes(&msg));
 }

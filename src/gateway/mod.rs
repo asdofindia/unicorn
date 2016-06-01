@@ -1,3 +1,3 @@
-pub use self::client::run;
+pub use self::service::run;
 
-pub mod client;
+pub mod service;

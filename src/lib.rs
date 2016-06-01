@@ -11,7 +11,7 @@ pub mod logger;
 pub mod core;
 pub mod gateway;
 pub mod messages;
-pub mod network;
+pub mod rpc;
 
 /// unicorn version
 pub const VERSION: [i32; 3] = [0, 0, 1];

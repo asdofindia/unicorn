@@ -1,6 +1,5 @@
-use network::Net;
-
-use super::processor::ProcessMsg;
+use rpc::{RPC, RPCType};
+use super::processor::process;
 
 /// Run the core service
 ///
@@ -8,16 +7,29 @@ use super::processor::ProcessMsg;
 pub fn run() {
     debug!("Running core...");
 
-    // Address of the listener socket
-    // Max port: 65535 (u16 MAX)
-    let addr = "127.0.0.1:60000".to_string();
+    let mut crpc = RPC::new(RPCType::Server("ipc:///tmp/muktakosh-unicorn-core.ipc"));
 
-    match Net::bind(addr) {
-        Ok(net) => {
-            debug!("[core] Listening on {}", net.addr());
-            static P: ProcessMsg = ProcessMsg{};
-            net.recv(&P);
+    let mut buff = String::new();
+
+    loop {
+        match crpc.recv(&mut buff) {
+            Ok(_) => {
+                let reply: Vec<u8> = process(&buff);
+                if reply.len() == 0 {
+                    break;
+                }
+                crpc.send(reply).unwrap();
+                buff.clear();
+            },
+            Err(e) => {
+                error!("Got error while reading: {}", e);
+                break;
+            }
         }
-        Err(_) => debug!("[core] Error binding listener"),
+    }
+
+    match crpc.close() {
+        Ok(_) => info!("Bye!"),
+        Err(e) => panic!("Error while shutting down service. Reason: {}", e)
     }
 }

@@ -27,8 +27,8 @@ pub fn encode_bytes<'a>(msg: &Msg) -> Vec<u8> {
 }
 
 /// Generic decoder for all messages. Decodes JSON strings to message structures
-pub fn decode(encodedstr: String) -> Option<Msg> {
-    match json::decode(&encodedstr[..]) {
+pub fn decode(encodedstr: &String) -> Option<Msg> {
+    match json::decode(encodedstr.as_ref()) {
         Ok(enc) => Some(enc),
         Err(e) => {
             debug!("Cannot decode message: {}", e.description());
@@ -68,7 +68,7 @@ mod tests {
     fn test_message_decode() {
         let tj = dummy();
         let tjen = encode(&tj).unwrap();
-        let tjde = decode(tjen).unwrap();
+        let tjde = decode(&tjen).unwrap();
 
         assert_eq!(tj, tjde);
     }
@@ -79,7 +79,7 @@ mod tests {
         let tj = dummy();
         {
             let tjen = encode_bytes(&tj);
-            let tjde = decode(String::from_utf8(tjen).unwrap()).unwrap();
+            let tjde = decode(&String::from_utf8(tjen).unwrap()).unwrap();
 
             assert_eq!(tj, tjde);
         }
